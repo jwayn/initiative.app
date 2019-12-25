@@ -1,28 +1,29 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div id="app" class="w-full mt-12 sm:mt-0 bg-gray-100">
+    <Banner/>
+    <div class="flex justify-center w-full">
+      <InitiativeScreen/>
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Banner from './components/Banner.vue'
+import InitiativeScreen from './components/InitiativeScreen.vue'
 
 export default {
   name: 'app',
   components: {
-    HelloWorld
+    Banner,
+    InitiativeScreen,
   }
 }
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+@tailwind base;
+
+@tailwind components;
+
+@tailwind utilities;
 </style>
