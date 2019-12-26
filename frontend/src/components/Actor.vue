@@ -58,13 +58,22 @@
           <div>
             <span class="text-gray-700 text-xs">Level {{actor.level}} {{actor.alignment}} {{actor.race.charAt(0).toUpperCase() + actor.race.substring(1)}} {{actor.class.length == 1 ? actor.class[0] : actor.class.join('/')}}</span>
           </div>
-          <div>
+          <div class="flex">
             <span class="mr-1 font-light text-gray-600">AC</span>
             <span class="mr-2">{{actor.armorClass}}</span>
-            <button @click="showHealthModal = !showHealthModal">
-              <span class="mr-1 font-light text-gray-600">HP</span>
-              <span>{{actor.currentHitPoints}}</span><span class="font-light text-gray-600">/</span><span>{{actor.totalHitPoints}}</span>
-            </button>
+            <div class="relative">
+              <button @click="showHealthModal = !showHealthModal">
+                <span class="mr-1 font-light text-gray-600">HP</span>
+                <span>{{actor.currentHitPoints}}</span><span class="font-light text-gray-600">/</span><span>{{actor.totalHitPoints}}</span>
+              </button>
+              <div v-if="showHealthModal" class="health-modal bg-white absolute shadow p-2 rounded">
+                  <input v-model="healthAmountToChange" class="w-full shadow mb-1 px-2" type="number">
+                  <div class="flex justify-between m-2">
+                    <button @click="damage" class="border border-red-600 text-red-600 rounded px-1">Damage</button>
+                    <button @click="heal" class="border border-green-600 text-green-600 rounded px-1">Heal</button>
+                  </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -77,6 +86,7 @@ export default {
   data: function() {
     return {
       showHealthModal: false,
+      healthAmountToChange: 0,
     }
   },
   props: {
@@ -84,9 +94,19 @@ export default {
     index: Number
   },
   methods: {
-    alterHealth: function() {
-      //eslint-disable-next-line
-      this.actor.currentHitPoints -= 5;
+    damage: function() {
+      if(this.actor.currentHitPoints - Number(this.healthAmountToChange) <= 0) {
+        this.actor.currentHitPoints = 0;
+      } else {
+        this.actor.currentHitPoints -= Number(this.healthAmountToChange);
+      }
+    },
+    heal: function() {
+      if(this.actor.currentHitPoints + Number(this.healthAmountToChange >= this.actor.totalHitPoints)) {
+        this.actor.currentHitPoints = this.actor.totalHitPoints;
+      } else {
+        this.actor.currentHitPoints += Number(this.healthAmountToChange);
+      }
     }
   },
   computed: {
@@ -100,5 +120,21 @@ export default {
 <style>
   .min-w-16 {
     min-width: 4rem;
+  }
+
+  .health-modal {
+    left: calc(50% - 8rem);
+    top: -6rem;
+    width: 10rem;
+    z-index: 0;
+  }
+
+  .health-modal:before {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: calc(85% - 5px);
+    border: solid 10px transparent;
+    border-top-color: #FFF;
   }
 </style>

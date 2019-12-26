@@ -1,5 +1,5 @@
 <template>
-    <header class="sm:h-12 bg-green-700 sm:flex sm:justify-between p-2 sm:px-4 sm:py-3 sm:items-center fixed sm:static left-0 sm:left-auto top-0 sm:top-auto w-full">
+    <header class="banner sm:h-12 bg-green-700 sm:flex sm:justify-between p-2 sm:px-4 sm:py-3 sm:items-center fixed sm:static left-0 sm:left-auto top-0 sm:top-auto w-full">
         <div class="flex justify-between items-center sm:p-0">
             <span class="text-white font-sans text-2xl">Initiative</span>
             <div class="sm:hidden">
@@ -36,6 +36,10 @@ export default {
     
     .right-1 {
         right: 1rem;
+    }
+    
+    .banner {
+        z-index: 9999;
     }
 </style>
 
