@@ -14,7 +14,7 @@
         <div :class="menuOpen ? 'block' : 'hidden'" class="px-4 pt-1 pb-4 sm:flex sm:p-0 absolute left-0 sm:right-1 sm:left-auto bg-green-700 w-full sm:w-auto">
             <a href="#" class="block text-white font-semibold p-2 mt-1 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Actors</a>
             <a href="#" class="block text-white font-semibold p-2 mt-1 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Encounters</a>
-            <a href="#" class="block text-white font-semibold p-2 pb-0 mt-1 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Tracker</a>
+            <a href="#" class="block text-white font-semibold p-2 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Tracker</a>
         </div>
     </header> 
 </template>
