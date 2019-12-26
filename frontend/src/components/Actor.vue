@@ -1,5 +1,8 @@
 <template>
-  <div class="m-2 rounded shadow bg-gray-200">
+  <div 
+    class="m-2 rounded shadow bg-gray-200"
+    :id="`index-${index}`"
+  >
 
     <!-- health indicator -->
     <div class="h-1 rounded-t bg-red-600">
@@ -31,8 +34,10 @@
           </div>
           <div class="flex flex-col flex-grow">
             <div class="flex justify-between pb-1">
-              <span class="font-medium text-gray-800 text-lg">{{actor.characterName}}</span>
-              <span class="font-light text-gray-600 text-lg self-end">{{actor.playerName}}</span>
+              <div>
+                <span class="font-medium text-gray-800 text-lg pr-3">{{actor.characterName}}</span>
+                <span class="font-light text-gray-600 text-lg">{{actor.playerName}}</span>
+              </div>
               <button @click="$emit('deleteActor', index)">
                 <svg class="text-gray-500 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
                   <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/>
@@ -86,12 +91,12 @@ export default {
   data: function() {
     return {
       showHealthModal: false,
-      healthAmountToChange: 0,
+      healthAmountToChange: 1,
     }
   },
   props: {
     actor: Object,
-    index: Number
+    index: Number,
   },
   methods: {
     damage: function() {
@@ -102,12 +107,12 @@ export default {
       }
     },
     heal: function() {
-      if(this.actor.currentHitPoints + Number(this.healthAmountToChange >= this.actor.totalHitPoints)) {
+      if(this.actor.currentHitPoints + Number(this.healthAmountToChange) >= this.actor.totalHitPoints) {
         this.actor.currentHitPoints = this.actor.totalHitPoints;
       } else {
         this.actor.currentHitPoints += Number(this.healthAmountToChange);
       }
-    }
+    },
   },
   computed: {
     healthWidth: function() {

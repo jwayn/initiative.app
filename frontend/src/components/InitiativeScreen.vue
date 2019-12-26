@@ -8,7 +8,7 @@
                 <span class="text-lg font-light">Party Code: </span><span class="text-lg font-medium">DOGE</span>
             </div>
         </div>
-        <div class="flex justify-end mb-4">
+        <div class="flex justify-end">
             <button class="rounded border border-green-600 p-1 px-3 text-green-600 font-thin uppercase mr-2">
                 Add Actor
             </button>
@@ -17,29 +17,33 @@
             </button>
         </div>
         
-        <div class="mt-6" v-if="actors.length >= 1">
-            <span class="ml-3 text-lg text-gray-500 font-light">
-                Current
-            </span>
-            <Actor v-on:deleteActor="deleteActor" :actor="actors[0]" :index="0" :key="0" />
-        </div>
-        <div class="mt-6" v-if="actors.length > 1">
-            <span class="ml-3 text-lg text-gray-500 font-light">
-                Up Next
-            </span>
-            <Actor v-on:deleteActor="deleteActor" :actor="actors[1]" :index="1" :key="1" />
-        </div>
-        <div class="mt-6" v-if="actors.length > 2">
-            <span class="ml-3 text-lg text-gray-500 font-light">
-                Up Later
-            </span>
-            <Actor v-on:deleteActor="deleteActor" v-for="n in actors.length - 2" :actor="actors[n+1]" :index="n+1" :key="n+1" />
-        </div>
+        <draggable v-model="actors" @start="drag=true" @end="drag=false" class="pt-10 pb-10">
+            <!-- <div class="mt-6" v-if="actors.length >= 1">
+                <span class="ml-3 text-lg text-gray-500 font-light">
+                    Current
+                </span>
+                <Actor v-on:deleteActor="deleteActor" :actor="actors[0]" :index="0" :key="0" />
+            </div>
+            <div class="mt-6" v-if="actors.length > 1">
+                <span class="ml-3 text-lg text-gray-500 font-light">
+                    Up Next
+                </span>
+                <Actor v-on:deleteActor="deleteActor" :actor="actors[1]" :index="1" :key="1" />
+            </div>
+            <div class="mt-6" v-if="actors.length > 2">
+                <span class="ml-3 text-lg text-gray-500 font-light">
+                    Up Later
+                </span>
+                <Actor v-on:deleteActor="deleteActor" v-for="n in actors.length - 2" :actor="actors[n+1]" :index="n+1" :key="n+1" />
+            </div> -->
+             <Actor v-on:deleteActor="deleteActor" v-for="n in actors.length" :actor="actors[n-1]" :index="n" :key="actors[n-1].id" />
+        </draggable>
     </div>
 </template>
 
 <script>
 import Actor from './Actor.vue'
+import draggable from 'vuedraggable'
 
 export default {
     data() {
@@ -58,7 +62,8 @@ export default {
                     class: ['rogue', 'bard'],
                     race: 'halfling',
                     level: 13,
-                    initiative: 20
+                    initiative: 20,
+                    id: 0,
                 },
                 {
                     characterName: 'Dacke Silentstep',
@@ -73,7 +78,8 @@ export default {
                     class: ['rogue', 'bard'],
                     race: 'halfling',
                     level: 13,
-                    initiative: 20
+                    initiative: 20,
+                    id: 1,
                 },
                 {
                     characterName: 'Dacke Silentstep',
@@ -88,7 +94,8 @@ export default {
                     class: ['rogue', 'bard'],
                     race: 'halfling',
                     level: 13,
-                    initiative: 20
+                    initiative: 20,
+                    id: 2,
                 },
                 {
                     characterName: 'Dacke Silentstep',
@@ -103,7 +110,8 @@ export default {
                     class: ['rogue', 'bard'],
                     race: 'halfling',
                     level: 13,
-                    initiative: 20
+                    initiative: 20,
+                    id: 3,
                 },
                 {
                     characterName: 'Dacke Silentstep',
@@ -118,7 +126,8 @@ export default {
                     class: ['rogue', 'bard'],
                     race: 'halfling',
                     level: 13,
-                    initiative: 20
+                    initiative: 20,
+                    id: 4,
                 },
                 {
                     characterName: 'Dacke Silentstep',
@@ -133,7 +142,8 @@ export default {
                     class: ['rogue', 'bard'],
                     race: 'halfling',
                     level: 13,
-                    initiative: 20
+                    initiative: 20,
+                    id: 5,
                 },
                 {
                     characterName: 'Dacke Silentstep',
@@ -148,7 +158,8 @@ export default {
                     class: ['rogue', 'bard'],
                     race: 'halfling',
                     level: 13,
-                    initiative: 20
+                    initiative: 20,
+                    id: 6,
                 },
                 {
                     characterName: 'Dacke Silentstep',
@@ -163,7 +174,8 @@ export default {
                     class: ['rogue', 'bard'],
                     race: 'halfling',
                     level: 13,
-                    initiative: 20
+                    initiative: 20,
+                    id: 7,
                 },
                 {
                     characterName: 'Dacke Silentstep',
@@ -175,10 +187,11 @@ export default {
                     currentHitPoints: 27,
                     totalHitPoints: 94,
                     alignment: 'NG',
-                    class: ['rogue', 'bard'],
+                    class: ['rogue'],
                     race: 'halfling',
                     level: 13,
-                    initiative: 20
+                    initiative: 20,
+                    id: 8,
                 }
             ],
             menuOpen: false,
@@ -186,6 +199,7 @@ export default {
     },
     components: {
         Actor,
+        draggable,
     },
     methods: {
         nextTurn: function() {
@@ -193,8 +207,6 @@ export default {
             this.actors.splice(0,1);
         },
         deleteActor: function(actorIndex) {
-            //eslint-disable-next-line
-            console.log(actorIndex);
             this.actors.splice(actorIndex, 1)
         },
     }
