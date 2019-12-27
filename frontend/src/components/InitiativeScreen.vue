@@ -54,7 +54,7 @@ export default {
                     initiativeModifier: 5,
                     initiative: 20,
                     id: 0,
-                    accentColor: 'red-100',
+                    accentColor: 'red-400',
                 },
                 {
                     characterName: 'Carhan',
@@ -156,11 +156,11 @@ export default {
     }
 
     .actor-list-enter-active, .actor-list-leave-active {
-        transition: all 0.5s;
+        transition: all 0.3s;
     }
 
     .actor-list-enter, .actor-list-leave-to {
         opacity: 0;
-        transform: translateX(30px);
+        transform: translateX(100px);
     }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="my-5">
     <div v-if="index==0">
       <span class="ml-3 text-lg text-gray-500 font-light">
           Current
@@ -30,7 +30,7 @@
       <div
         class="flex flex-row p-3 rounded-b"
         :style="{
-          borderBottom: this.actor.accentColor ? `2px solid ${colors[this.actor.accentColor.split('-')[0]][this.actor.accentColor.split('-')[1]]}` : '2px solid #CBD5E0'}"
+          borderBottom: this.actor.accentColor ? `4px solid ${colors[this.actor.accentColor.split('-')[0]][this.actor.accentColor.split('-')[1]]}` : ''}"
       >
         <div class="flex flex-col w-full">
           <div class="flex flex-row">

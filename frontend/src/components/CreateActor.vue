@@ -1,5 +1,8 @@
 <template>
-  <div></div>
+  <div>
+      <div>Create a new actor</div>
+      
+  </div>
 </template>
 
 <script>

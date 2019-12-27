@@ -12,13 +12,17 @@
             </div>
         </div>
         <div :class="menuOpen ? 'block' : 'hidden'" class="px-4 pt-1 pb-4 sm:flex sm:p-0 absolute left-0 sm:right-1 sm:left-auto bg-green-700 w-full sm:w-auto">
-            <a href="#" class="block text-white font-semibold p-2 mt-1 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Actors</a>
-            <a href="#" class="block text-white font-semibold p-2 mt-1 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Encounters</a>
-            <a href="#" class="block text-white font-semibold p-2 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Tracker</a>
+            <router-link to="/actors" class="block text-white font-semibold p-2 mt-1 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Actors</router-link>
+            <router-link v-if="isSignedIn" to="/encounters" class="block text-white font-semibold p-2 mt-1 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Encounters</router-link>
+            <router-link to="/tracker" class="block text-white font-semibold p-2 mt-1 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Tracker</router-link>
+            <router-link v-if="!this.$store.state.isSignedIn" to="/signin" class="block text-white font-semibold p-2 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Sign In</router-link>
+            <router-link v-if="this.$store.state.isSignedIn" to="/signout" class="block text-white font-semibold p-2 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Sign Out</router-link>
         </div>
     </header> 
 </template>
 <script>
+import { mapState } from 'vuex';
+
 export default {
     name: 'Banner',
     data() {
@@ -26,6 +30,9 @@ export default {
             menuOpen: false,
         }
     },
+    computed: {
+        ...mapState(['isSignedIn',]),
+    }
 }
 </script>
 
