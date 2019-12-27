@@ -1,5 +1,5 @@
 <template>                                                      
-    <div class="bg-gray-100 w-full max-w-3xl" v-if="actors">
+    <div class="bg-gray-100 w-full max-w-3xl">
         <div class="flex items-center justify-between m-2 mt-3 mb-4">
             <div>
                 <span class="text-lg font-light">Jason's Party</span> 
@@ -8,6 +8,7 @@
                 <span class="text-lg font-light">Party Code: </span><span class="text-lg font-medium">DOGE</span>
             </div>
         </div>
+        <AddActor />
         <div class="flex justify-end">
             <button class="rounded border border-green-600 p-1 px-3 text-green-600 font-thin uppercase mr-2">
                 Add Actor
@@ -17,32 +18,20 @@
             </button>
         </div>
         
-        <draggable v-model="actors" @start="drag=true" @end="drag=false" class="pt-10 pb-10" ghost-class="ghost">
-            <!-- <div class="mt-6" v-if="actors.length >= 1">
-                <span class="ml-3 text-lg text-gray-500 font-light">
-                    Current
-                </span>
-                <Actor v-on:deleteActor="deleteActor" :actor="actors[0]" :index="0" :key="0" />
-            </div>
-            <div class="mt-6" v-if="actors.length > 1">
-                <span class="ml-3 text-lg text-gray-500 font-light">
-                    Up Next
-                </span>
-                <Actor v-on:deleteActor="deleteActor" :actor="actors[1]" :index="1" :key="1" />
-            </div>
-            <div class="mt-6" v-if="actors.length > 2">
-                <span class="ml-3 text-lg text-gray-500 font-light">
-                    Up Later
-                </span>
-                <Actor v-on:deleteActor="deleteActor" v-for="n in actors.length - 2" :actor="actors[n+1]" :index="n+1" :key="n+1" />
-            </div> -->
-             <Actor v-on:deleteActor="deleteActor" v-for="n in actors.length" :actor="actors[n-1]" :index="n - 1" :key="actors[n-1].id" />
+        <draggable v-model="actors" @start="drag=true" @end="drag=false" :options="{delay:400, delayOnTouchOnly: true}" class="pt-10 pb-10" v-if="actors">
+            <transition-group name="actor-list" tag="div">
+                <Actor v-on:deleteActor="deleteActor" v-for="n in actors.length" :actor="actors[n-1]" :index="n - 1" :key="actors[n-1].id" />
+            </transition-group>
         </draggable>
+        <div v-else>
+            Add actors to track
+        </div>
     </div>
 </template>
 
 <script>
 import Actor from './Actor.vue'
+import AddActor from './AddActor.vue';
 import draggable from 'vuedraggable'
 
 export default {
@@ -65,7 +54,7 @@ export default {
                     initiativeModifier: 5,
                     initiative: 20,
                     id: 0,
-                    accentColor: 'purple-500',
+                    accentColor: 'red-100',
                 },
                 {
                     characterName: 'Carhan',
@@ -83,7 +72,6 @@ export default {
                     initiativeModifier: 9,
                     initiative: 20,
                     id: 1,
-                    accentColor: 'pink-600',
                 },
                 {
                     characterName: 'Ladybug',
@@ -146,6 +134,7 @@ export default {
     components: {
         Actor,
         draggable,
+        AddActor,
     },
     methods: {
         nextTurn: function() {
@@ -164,5 +153,14 @@ export default {
         height: calc(100vh - 4.5rem);
         position: fixed;
         overflow-y: scroll;
+    }
+
+    .actor-list-enter-active, .actor-list-leave-active {
+        transition: all 0.5s;
+    }
+
+    .actor-list-enter, .actor-list-leave-to {
+        opacity: 0;
+        transform: translateX(30px);
     }
 </style>

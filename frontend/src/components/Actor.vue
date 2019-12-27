@@ -29,7 +29,8 @@
       <!-- rest of actor -->
       <div
         class="flex flex-row p-3 rounded-b"
-        :style="{borderRight: '2px solid #CBD5E0', borderBottom: '2px solid #CBD5E0', borderLeft: this.actor.accentColor ? `8px solid ${colors[this.actor.accentColor.split('-')[0]][this.actor.accentColor.split('-')[1]]}` : '2px solid #CBD5E0'}"
+        :style="{
+          borderBottom: this.actor.accentColor ? `2px solid ${colors[this.actor.accentColor.split('-')[0]][this.actor.accentColor.split('-')[1]]}` : '2px solid #CBD5E0'}"
       >
         <div class="flex flex-col w-full">
           <div class="flex flex-row">
@@ -50,11 +51,17 @@
             </div>
             <div class="flex flex-col flex-grow">
               <div class="flex justify-between pb-1">
-                <div>
-                  <span class="font-medium text-gray-800 text-lg pr-3">{{actor.characterName}}</span>
+                <div class="flex flex-wrap">
+                  <span 
+                    class="font-medium text-gray-800 text-lg pr-3"
+                    :class="this.actor.accentColor && this.actor.accentColor.split('-')[1] < 400 ? 'text-shadow' : ''"
+                    :style="{color: this.actor.accentColor ? `${colors[this.actor.accentColor.split('-')[0]][this.actor.accentColor.split('-')[1]]}` : ''}"
+                  >
+                    {{actor.characterName}}
+                  </span>
                   <span class="font-light text-gray-600 text-lg">{{actor.playerName}}</span>
                 </div>
-                <button @click="$emit('deleteActor', index)">
+                <button @click="$emit('deleteActor', index)" class="self-start">
                   <svg class="text-gray-500 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
                     <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/>
                   </svg>
@@ -274,5 +281,9 @@ export default {
 
   .animate-width {
     transition: width .3s cubic-bezier(.2,.98,.24,.39);
+  }
+
+  .text-shadow {
+    text-shadow: 0 1px 3px #A0AEC0;
   }
 </style>
