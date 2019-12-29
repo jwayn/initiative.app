@@ -1,12 +1,18 @@
 <template>
-  <div class="m-2 py-2">
+  <div class="pb-2">
     <transition name="color-fade" mode="out-in">
-      <div v-if="!showColors" class="flex justify-between w-full" key="baseColors">
-        <button v-for="color in colorsArray" :key="color" class="w-8 h-8 rounded-full shadow border border-gray-300" :class="`bg-${color}-500`" @click="setBaseColor(color)">
+      <div v-if="step === 1">
+        <button @click.prevent="step = 2" class="rounded px-2 py-1 w-full border-2 text-gray-800 font-light flex justify-center items-center" :class="`border-${selectedColor}`">
+            Accent Color
+            <div class="h-4 w-4 ml-2 rounded-full" :class="`bg-${selectedColor}`"></div>
         </button>
       </div>
-      <div v-if="showColors" key="distinctColors" class="flex justify-between w-full">
-        <button @click="pickColor(showColors, value)" v-for="value in colorValues" :key="value" :class="`bg-${showColors}-${value}`" class="w-8 h-8 rounded-full shadow border border-gray-300">
+      <div v-if="step === 2" class="flex justify-between w-full" key="baseColors">
+        <button v-for="color in colorsArray" :key="color" class="w-8 h-8 rounded-full shadow border border-gray-300" :class="`bg-${color}-500`" @click.prevent="setBaseColor(color)">
+        </button>
+      </div>
+      <div v-if="step === 3" key="distinctColors" class="flex justify-between w-full">
+        <button @click.prevent="pickColor(showColors, value)" v-for="value in colorValues" :key="value" :class="`bg-${showColors}-${value}`" class="w-8 h-8 rounded-full shadow border border-gray-300">
         </button>
       </div>
     </transition>
@@ -151,15 +157,18 @@ export default {
                     {value: 900, color: '#902459'},
                 ],
             },
+            step: 1,
             showColors: false,
             selectedColor: '',
         }
     },
     methods: {
         setBaseColor: function(color) {
+            this.step = 3;
             this.showColors = color;
         },
         pickColor: function(color, value) {
+            this.step = 1;
             this.selectedColor = color + '-' + value;
             this.showColors = false;
         }
