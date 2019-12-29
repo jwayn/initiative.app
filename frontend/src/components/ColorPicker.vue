@@ -2,17 +2,27 @@
   <div class="pb-2">
     <transition name="color-fade" mode="out-in">
       <div v-if="step === 1">
-        <button @click.prevent="step = 2" class="rounded px-2 py-1 w-full border-2 text-gray-800 font-light flex justify-center items-center" :class="`border-${selectedColor}`">
+        <button @click.prevent="step = 2" class="shadow rounded px-2 py-1 w-full border-2 text-gray-800 font-light flex justify-center items-center" :class="`border-${selectedColor}`">
             Accent Color
             <div class="h-4 w-4 ml-2 rounded-full" :class="`bg-${selectedColor}`"></div>
         </button>
       </div>
-      <div v-if="step === 2" class="flex justify-between w-full" key="baseColors">
+      <div v-if="step === 2" class="flex justify-between pb-1 w-full" key="baseColors">
         <button v-for="color in colorsArray" :key="color" class="w-8 h-8 rounded-full shadow border border-gray-300" :class="`bg-${color}-500`" @click.prevent="setBaseColor(color)">
         </button>
+        <button class="w-8 h-8 rounded-full shadow border border-gray-300 flex justify-center items-center" @click.prevent="step = 1">
+            <svg class="w-4 h-4 text-gray-600 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                <path d="M5.828 7l2.536 2.536L6.95 10.95 2 6l4.95-4.95 1.414 1.414L5.828 5H13a8 8 0 1 1 0 16H4v-2h9a6 6 0 1 0 0-12H5.828z"/>
+            </svg>
+        </button>
       </div>
-      <div v-if="step === 3" key="distinctColors" class="flex justify-between w-full">
+      <div v-if="step === 3" key="distinctColors" class="flex pb-1 justify-between w-full">
         <button @click.prevent="pickColor(showColors, value)" v-for="value in colorValues" :key="value" :class="`bg-${showColors}-${value}`" class="w-8 h-8 rounded-full shadow border border-gray-300">
+        </button>
+        <button class="w-8 h-8 rounded-full shadow border border-gray-300 flex justify-center items-center" @click.prevent="step = 2">
+            <svg class="w-4 h-4 text-gray-600 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                <path d="M5.828 7l2.536 2.536L6.95 10.95 2 6l4.95-4.95 1.414 1.414L5.828 5H13a8 8 0 1 1 0 16H4v-2h9a6 6 0 1 0 0-12H5.828z"/>
+            </svg>
         </button>
       </div>
     </transition>
@@ -35,8 +45,6 @@ export default {
                 'pink',
             ],
             colorValues: [
-                100,
-                200,
                 300,
                 400,
                 500,
@@ -171,6 +179,7 @@ export default {
             this.step = 1;
             this.selectedColor = color + '-' + value;
             this.showColors = false;
+            this.$emit('pickColor', this.selectedColor);
         }
     }
 }
@@ -183,11 +192,9 @@ export default {
     
     .color-fade-enter {
       opacity: 0;
-      transform: translateX(-50px);
     }
     
     .color-fade-leave-to {
       opacity: 0;
-      transform: translateX(50px);
     }
 </style>
