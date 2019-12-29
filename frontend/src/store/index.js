@@ -13,7 +13,7 @@ export default new Vuex.Store({
             actors: {},
         },
         savedActors: localStorage.getItem('savedActors') || [],
-        savedActorsLoading: false,
+        savedActorsLoading: true,
     },
     getters: {
         isSignedIn: state => {
@@ -87,9 +87,17 @@ export default new Vuex.Store({
                 }
             });
 
+            //eslint-disable-next-line
+            console.log(response);
+
             if(response.status === 200) {
                 const newActor = response.data.returnedActor[0];
                 context.commit('addToSavedActors', newActor);
+                return true;
+            } else {
+                //eslint-disable-next-line
+                console.log('Error in response or somehting');
+                return false;
             }
         }
     }
