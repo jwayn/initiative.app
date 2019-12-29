@@ -1,14 +1,17 @@
 const knex = require('./connection');
+const uuidv4 = require('uuid/v4');
 
 module.exports = {
     getOneById: function(id) {
         return knex('actors').where('id', id).first();
     },
-    getAllByUser: function(owner_id) {
-        return knex('actors').where('owner_id', owner_id);
+    getAllByUser: function(owner) {
+        return knex('actors').select().where({owner});
     },
-    create: function(actor) {
-        return knex('actors').insert(actor).returning();
+    create: function(user_id, actor) {
+        actor.owner = user_id;
+        actor.id = uuidv4();
+        return knex('actors').insert(actor).returning(['*']);
     },
     delete: function(id) {
         return knex('actors').where('id', id).del();

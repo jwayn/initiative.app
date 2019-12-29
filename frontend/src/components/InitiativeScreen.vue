@@ -8,7 +8,6 @@
                 <span class="text-lg font-light">Party Code: </span><span class="text-lg font-medium">DOGE</span>
             </div>
         </div>
-        <AddActor />
         <div class="flex justify-end">
             <button class="rounded border border-green-600 p-1 px-3 text-green-600 font-thin uppercase mr-2">
                 Add Actor
@@ -31,7 +30,6 @@
 
 <script>
 import Actor from './Actor.vue'
-import AddActor from './AddActor.vue';
 import draggable from 'vuedraggable'
 
 export default {
@@ -55,6 +53,7 @@ export default {
                     initiative: 20,
                     id: 0,
                     accentColor: 'red-400',
+                    visibleToGuests: true,
                 },
                 {
                     characterName: 'Carhan',
@@ -72,6 +71,7 @@ export default {
                     initiativeModifier: 9,
                     initiative: 20,
                     id: 1,
+                    visibleToGuests: true,
                 },
                 {
                     characterName: 'Ladybug',
@@ -89,7 +89,8 @@ export default {
                     initiativeModifier: 6,
                     initiative: 20,
                     id: 2,
-                    accentColor: 'teal-600',
+                    accentColor: 'teal-100',
+                    visibleToGuests: true,
                 },
                 {
                     characterName: 'Stavinn Shadowgrave',
@@ -108,6 +109,7 @@ export default {
                     initiative: 20,
                     id: 3,
                     accentColor: 'indigo-600',
+                    visibleToGuests: true,
                 },
                 {
                     characterName: 'Venzana',
@@ -126,6 +128,7 @@ export default {
                     initiative: 20,
                     id: 4,
                     accentColor: 'orange-600',
+                    visibleToGuests: false,
                 },
             ],
             menuOpen: false,
@@ -134,7 +137,6 @@ export default {
     components: {
         Actor,
         draggable,
-        AddActor,
     },
     methods: {
         nextTurn: function() {

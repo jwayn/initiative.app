@@ -1,5 +1,5 @@
 <template>
-    <header class="banner sm:h-12 bg-green-700 sm:flex sm:justify-between p-2 sm:px-4 sm:py-3 sm:items-center fixed sm:static left-0 sm:left-auto top-0 sm:top-auto w-full">
+    <header class="banner h-12 sm:h-12 bg-green-700 sm:flex sm:justify-between p-2 sm:px-4 sm:py-3 sm:items-center fixed sm:static left-0 sm:left-auto top-0 sm:top-auto w-full">
         <div class="flex justify-between items-center sm:p-0">
             <span class="text-white font-sans text-2xl">Initiative</span>
             <div class="sm:hidden">
@@ -11,17 +11,17 @@
                 </button>
             </div>
         </div>
-        <div :class="menuOpen ? 'block' : 'hidden'" class="px-4 pt-1 pb-4 sm:flex sm:p-0 absolute left-0 sm:right-1 sm:left-auto bg-green-700 w-full sm:w-auto">
+        <div @click="menuOpen = false" :class="menuOpen ? 'block' : 'hidden'" class="px-4 pt-1 pb-4 sm:flex sm:p-0 absolute left-0 sm:right-1 sm:left-auto bg-green-700 w-full sm:w-auto">
             <router-link to="/actors" class="block text-white font-semibold p-2 mt-1 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Actors</router-link>
             <router-link v-if="isSignedIn" to="/encounters" class="block text-white font-semibold p-2 mt-1 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Encounters</router-link>
-            <router-link to="/tracker" class="block text-white font-semibold p-2 mt-1 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Tracker</router-link>
-            <router-link v-if="!this.$store.state.isSignedIn" to="/signin" class="block text-white font-semibold p-2 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Sign In</router-link>
-            <router-link v-if="this.$store.state.isSignedIn" to="/signout" class="block text-white font-semibold p-2 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Sign Out</router-link>
+            <router-link v-if="isSignedIn" to="/tracker" class="block text-white font-semibold p-2 mt-1 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Tracker</router-link>
+            <router-link v-if="!isSignedIn" to="/signin" class="block text-white font-semibold p-2 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Sign In</router-link>
+            <router-link v-if="isSignedIn" to="/signout" class="block text-white font-semibold p-2 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Sign Out</router-link>
         </div>
     </header> 
 </template>
 <script>
-import { mapState } from 'vuex';
+import { mapGetters } from 'vuex';
 
 export default {
     name: 'Banner',
@@ -31,7 +31,7 @@ export default {
         }
     },
     computed: {
-        ...mapState(['isSignedIn',]),
+        ...mapGetters(['isSignedIn',]),
     }
 }
 </script>
