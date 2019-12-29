@@ -32,98 +32,85 @@
         :style="{
           borderBottom: this.actor.accentColor ? `4px solid ${colors[this.actor.accentColor.split('-')[0]][this.actor.accentColor.split('-')[1]]}` : ''}"
       >
-        <div class="flex flex-col w-full">
-          <div class="flex flex-row">
-            <div
-              class="rounded-full w-16 h-16 flex items-center justify-center mr-4 min-w-16"
-              :class="this.actor.accentColor ? `bg-${this.actor.accentColor}` : 'bg-gray-700' "
-            >
-              <svg
-                :class="this.actor.accentColor && this.actor.accentColor.split('-')[1] < 400 ? 'text-gray-700' : `text-white` "
-                class="text-white fill-current"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="24"
-                height="24"
+        <div class="w-full flex">
+          <div class="flex flex-col flex-grow">
+            <div class="flex flex-row">
+              <div
+                class="rounded-full w-16 h-16 flex items-center justify-center mr-4 min-w-16"
+                :class="this.actor.accentColor ? `bg-${this.actor.accentColor}` : 'bg-gray-700' "
               >
-                <path
-                  d="M4 22a8 8 0 1 1 16 0H4zm8-9c-3.315 0-6-2.685-6-6s2.685-6 6-6 6 2.685 6 6-2.685 6-6 6z"
-                />
-              </svg>
-            </div>
-            <div class="flex flex-col flex-grow">
-              <div class="flex justify-between pb-1">
-                <div class="flex flex-wrap">
-                  <span 
-                    class="font-medium text-gray-800 text-lg pr-3"
-                    :class="this.actor.accentColor && this.actor.accentColor.split('-')[1] < 400 ? `text-${this.actor.accentColor.split('-')[0]}-400` : `text-${this.actor.accentColor}` "
-                    
-                  >
-                    {{actor.characterName}}
-                  </span>
-                  <span class="font-light text-gray-600 text-lg">{{actor.playerName}}</span>
-                </div>
-                <button @click="$emit('deleteActor', index)" class="self-start" title="Remove actor from combat">
-                  <svg class="text-gray-500 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-                    <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/>
-                  </svg>
-                </button>
+                <svg
+                  :class="this.actor.accentColor && this.actor.accentColor.split('-')[1] < 400 ? 'text-gray-700' : `text-white` "
+                  class="text-white fill-current"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  height="24"
+                >
+                  <path
+                    d="M4 22a8 8 0 1 1 16 0H4zm8-9c-3.315 0-6-2.685-6-6s2.685-6 6-6 6 2.685 6 6-2.685 6-6 6z"
+                  />
+                </svg>
               </div>
-              <div class="my-1 text-sm sm:self-end">
-                <div class="flex flex-row sm:flex-col flex-wrap justify-between sm:justify-start">
-                  <div class="sm:text-right">
-                    <span class="font-thin text-gray-600 mr-1">Per.</span><span class="text-gray-800">{{actor.passivePerception}}</span>
-                  </div>
-                  <div class="sm:text-right">
-                    <span class="font-thin text-gray-600 mr-1">Inv.</span><span class="text-gray-800">{{actor.passiveInvestigation}}</span> 
-                  </div>
-                  <div class="sm:text-right">
-                    <span class="font-thin text-gray-600 mr-1">Ins.</span><span class="text-gray-800">{{actor.passiveInsight}}</span>
+              <div class="flex flex-col flex-grow">
+                <div class="flex justify-between pb-1">
+                  <div class="flex flex-wrap">
+                    <span class="text-lg font-bold text-gray-800 pr-2">{{actor.initiative}}</span>
+                    <span 
+                      class="font-medium text-gray-800 text-lg pr-3"
+                      :class="this.actor.accentColor && this.actor.accentColor.split('-')[1] < 400 ? `text-${this.actor.accentColor.split('-')[0]}-400` : `text-${this.actor.accentColor}` "
+                      
+                    >
+                      {{actor.characterName}}
+                    </span>
+                    <span class="font-light text-gray-600 text-lg">{{actor.playerName}}</span>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-          <div class="mt-1 flex flex-row justify-between">
-            <div>
-              <span class="text-gray-700 text-xs">Level {{actor.level}} {{actor.alignment}} {{actor.race.charAt(0).toUpperCase() + actor.race.substring(1)}} {{actor.class.length == 1 ? actor.class[0] : actor.class.join('/')}}</span>
-            </div>
-            <div class="flex">
-              <span class="mr-1 font-light text-gray-600">AC</span>
-              <span class="mr-2">{{actor.armorClass}}</span>
-              <div class="relative">
-                <button @click="showHealthModal = !showHealthModal">
-                  <span class="mr-1 font-light text-gray-600">HP</span>
-                  <span>{{actor.currentHitPoints}}</span><span class="font-light text-gray-600">/</span><span>{{actor.totalHitPoints}}</span>
-                </button>
-                <div v-if="showHealthModal" class="health-modal bg-white absolute shadow p-2 rounded">
-                    <input v-model="healthAmountToChange" class="w-full shadow mb-1 px-2" type="number">
-                    <div class="flex justify-between m-2">
-                      <button @click="damage" class="border border-red-600 text-red-600 rounded px-1">Damage</button>
-                      <button @click="heal" class="border border-green-600 text-green-600 rounded px-1">Heal</button>
+                  <div class="mt-2 flex flex-row justify-start">
+                    <div>
+                      <span class="mr-1 font-light text-gray-600">AC</span>
+                      <span class="mr-2">{{actor.armorClass}}</span>
                     </div>
-                </div>
+                    <div class="relative">
+                      <button @click="showHealthModal = !showHealthModal">
+                        <span class="mr-1 font-light text-gray-600">HP</span>
+                        <span>{{actor.currentHitPoints}}</span><span class="font-light text-gray-600">/</span><span>{{actor.totalHitPoints}}</span>
+                      </button>
+                      <div v-if="showHealthModal" class="health-modal bg-white absolute shadow p-2 rounded">
+                          <input v-model="healthAmountToChange" class="w-full shadow mb-1 px-2" type="number">
+                          <div class="flex justify-between m-2">
+                            <button @click="damage" class="border border-red-600 text-red-600 rounded px-1">Damage</button>
+                            <button @click="heal" class="border border-green-600 text-green-600 rounded px-1">Heal</button>
+                          </div>
+                      </div>
+                    </div>
+                  </div>
               </div>
             </div>
           </div>
-          <div class="mt-4 flex flex-row justify-end">
-            <button v-if="actor.visibleToGuests" class="px-1" title="Show actor to guests">
+          <div class="flex flex-col ml-2 justify-start items-center">
+            <div class="flex flex-col ml-2 justify-start">
+
+            <button @click="$emit('deleteActor', index)" class="mb-1" title="Remove actor from combat">
+              <svg class="text-gray-500 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/>
+              </svg>
+            </button>
+
+            <button v-if="actor.visibleToGuests" class="" title="Show actor to guests">
               <svg class="text-gray-500 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
                 <path d="M17.882 19.297A10.949 10.949 0 0 1 12 21c-5.392 0-9.878-3.88-10.819-9a10.982 10.982 0 0 1 3.34-6.066L1.392 2.808l1.415-1.415 19.799 19.8-1.415 1.414-3.31-3.31zM5.935 7.35A8.965 8.965 0 0 0 3.223 12a9.005 9.005 0 0 0 13.201 5.838l-2.028-2.028A4.5 4.5 0 0 1 8.19 9.604L5.935 7.35zm6.979 6.978l-3.242-3.242a2.5 2.5 0 0 0 3.241 3.241zm7.893 2.264l-1.431-1.43A8.935 8.935 0 0 0 20.777 12 9.005 9.005 0 0 0 9.552 5.338L7.974 3.76C9.221 3.27 10.58 3 12 3c5.392 0 9.878 3.88 10.819 9a10.947 10.947 0 0 1-2.012 4.592zm-9.084-9.084a4.5 4.5 0 0 1 4.769 4.769l-4.77-4.769z"/>
               </svg>
             </button>
-            <button v-if="!actor.visibleToGuests" class="px-1" title="Hide actor from guests">
+            <button v-if="!actor.visibleToGuests" class="" title="Hide actor from guests">
               <svg class="text-gray-500 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
                 <path d="M12 3c5.392 0 9.878 3.88 10.819 9-.94 5.12-5.427 9-10.819 9-5.392 0-9.878-3.88-10.819-9C2.121 6.88 6.608 3 12 3zm0 16a9.005 9.005 0 0 0 8.777-7 9.005 9.005 0 0 0-17.554 0A9.005 9.005 0 0 0 12 19zm0-2.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9zm0-2a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
               </svg>
             </button>
-            <button class="pl-1" title="Edit actor">
-              <svg class="text-gray-500 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-                <path d="M21 6.757l-2 2V4h-9v5H5v11h14v-2.757l2-2v5.765a.993.993 0 0 1-.993.992H3.993A1 1 0 0 1 3 20.993V8l6.003-6h10.995C20.55 2 21 2.455 21 2.992v3.765zm.778 2.05l1.414 1.415L15.414 18l-1.416-.002.002-1.412 7.778-7.778z"/>
-              </svg>
-            </button>
+          </div>
           </div>
         </div>
+
       </div>
     </div>
   </div>
