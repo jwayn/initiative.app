@@ -52,18 +52,19 @@
                   </div>
                 </div>
 
-                <div>
-                  <div class="flex" v-if="actor.total_hit_points || actor.armor_class">
-                    <span class="mr-1 font-light text-gray-600">AC</span>
-                    <span class="mr-2">{{actor.armor_class}}</span>
-                  <div>
-                    <span class="mr-1 font-light text-gray-600">HP</span>
-                    <span>{{actor.total_hit_points}}</span>
+                  <div v-if="actor.armor_class || actor.total_hit_points" class="flex flex-wrap">
+                    <div v-if="actor.armor_class">
+                      <span class="mr-1 font-light text-gray-600">AC</span>
+                      <span class="mr-2">{{actor.armor_class}}</span>
+                    </div>
+                    
+                    <div v-if="actor.total_hit_points">
+                      <span class="mr-1 font-light text-gray-600">HP</span>
+                      <span>{{actor.total_hit_points}}</span>
+                    </div>
                   </div>
-                </div>
 
               </div>
-            </div>
             </div>
           </div>
           <div class="flex flex-col ml-2 justify-start">

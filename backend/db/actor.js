@@ -11,14 +11,18 @@ module.exports = {
     create: function(user_id, actor) {
         actor.owner = user_id;
         actor.id = uuidv4();
-        return knex('actors').insert(actor).returning(['*']);
+        const now = new Date();
+        actor.created = now;
+        actor.updated = now;
+        return knex('actors').insert(actor).returning('*');
     },
     delete: function(id) {
         return knex('actors').where('id', id).del();
     },
     update: function(id, actor) {
-        let newActor = actor;
+        let newActor = {};
+        Object.assign(newActor, actor);
         newActor.updated = new Date();
-        return knex('actors').where('id', id).update(newActor);
+        return knex('actors').where('id', id).update(newActor).returning('*');
     },
 };

@@ -9,7 +9,6 @@ module.exports = {
     },
     create: function(user) {
         return knex('users').insert(user, ['id', 'username', 'email']).then(userData => {
-            console.log(userData);
             return {
                 id: userData[0].id,
                 username: userData[0].username,

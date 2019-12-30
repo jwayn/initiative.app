@@ -26,10 +26,8 @@ router.post('/signin', async (req, res, next) => {
             const user = await User.getOneByEmail(req.body.email);
             if(user) {
                 const result = await bcrypt.compare(req.body.password, user.password);
-                console.log(user);
                 // If the password matches
                 if(result){
-                    console.log('Signed in user: ', user);
                     User.updateLastLogin(user.id);
                     jwt.sign({user_id: user.id, username: user.username, email: user.email}, process.env.JWT_SECRET, {expiresIn: '1d'}, (err, token) => {
                         res.json({
@@ -49,7 +47,6 @@ router.post('/signin', async (req, res, next) => {
 });
 
 router.post('/signup', async (req, res, next) => {
-    console.log('Request!');
     if(validUser(req.body)) {
         const user = await User.getOneByEmail(req.body.email)
         if(!user) {

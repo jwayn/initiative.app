@@ -1,5 +1,6 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const createError = require('http-errors');
 const Actor = require('../db/actor')
 
 const verifyToken = require('../middleware/verify-token');
@@ -69,7 +70,7 @@ router.delete('/', verifyToken, async (req, res, next) => {
             await Actor.delete(actor_id);
             res.sendStatus(200);
         } else {
-            res.send(401);
+            res.send(403);
         }
     } catch (err) {
         next(err);
@@ -84,10 +85,10 @@ router.put('/', verifyToken, async (req, res, next) => {
     try {
         const existingActor = await Actor.getOneById(actor_id);
         if(existingActor && existingActor.owner === userId) {
-            await Actor.update(actor_id, actor);
-            res.sendStatus(200);
+            const updatedActor = await Actor.update(actor_id, actor);
+            res.json({updatedActor});
         } else {
-            res.send(401);
+            res.send(403);
         }
     } catch (err) {
         next(err);

@@ -1,5 +1,5 @@
 <template>
-  <div class="my-5">
+  <div class="my-5 cursor-pointer">
     <div v-if="index==0">
       <span class="ml-3 text-lg text-gray-500 font-light">
           Current

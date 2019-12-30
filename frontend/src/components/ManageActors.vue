@@ -4,50 +4,56 @@
 
     <transition name="fade">
       <!-- Actor list controls -->
-      <div  v-if="!showActorAdd" class='w-full flex items-center justify-around'>
-        <div>
-          <span
-          class="py-1 px-3 pr-2 rounded-l  cursor-pointer border-t border-l border-b border-green-700"
-          :class="filter === 'all' ? 'bg-green-700 text-white' : 'text-green-700'"
-          @click="filter = 'all'"
-          >
-            All
-          </span>
-          <span
-          class="py-1 pl-2 pr-1 cursor-pointer border border-green-700"
-          :class="filter === 'player' ? 'bg-green-700 text-white' : 'text-green-700'"
-          @click="filter = 'player'"
-          >
-            Player
-          </span>
-          <span 
-          class="p-1 px-2 rounded-r cursor-pointer border-t border-r border-b border-green-700"
-          :class="filter === 'npc' ? 'bg-green-700 text-white' : 'text-green-700'"
-          @click="filter = 'npc'"
-          >
-            NPC
-          </span>
-        </div>
-        
-        <div>
-          <button @click="showSortDropdown = true">Sort by: {{sortName}}</button>
-          <div>
-            <button @click="sort = 'created'; showSortDropdown = false">Created</button>
-            <button @click="sort = 'updated'; showSortDropdown = false">Updated</button>
-            <button @click="sort = 'actor_name'; showSortDropdown = false">Character Name</button>
-            <button @click="sort = 'player_name'; showSortDropdown = false">Player Name</button>
+      <div  v-if="!showActorAdd" class='w-full flex items-center justify-between flex-col sm:flex-row p-2'>
+
+        <div class="flex justify-around flex-col sm:flex-row items-center flex-wrap mb-2">
+
+          <div class="flex mb-4 sm:mb-0">
+            <button
+            class="py-1 px-3 rounded-l border-t border-l border-b border-green-700 bg-white"
+            :class="$store.state.filter === 'all' ? 'bg-green-700 text-white' : 'text-green-700'"
+            @click="$store.dispatch('updateFilter', 'all')"
+            >
+              All
+            </button>
+            <button
+            class="py-1 px-3 border border-green-700 bg-white"
+            :class="$store.state.filter === 'player' ? 'bg-green-700 text-white' : 'text-green-700'"
+            @click="$store.dispatch('updateFilter', 'player')"
+            >
+              Player
+            </button>
+            <button 
+            class="p-1 px-3 rounded-r border-t border-r border-b border-green-700 bg-white"
+            :class="$store.state.filter === 'npc' ? 'bg-green-700 text-white' : 'text-green-700'"
+            @click="$store.dispatch('updateFilter', 'npc')"
+            >
+              NPC
+            </button>
           </div>
+
+          <div class="mx-2 mb-4 sm:mb-0">
+            <button @click="showSortDropdown = !showSortDropdown" class="bg-green-700 rounded px-2 py-1 text-white">Sort by: {{sortName}}</button>
+            <div v-if="showSortDropdown" class="rounded border border-green-600 bg-white flex flex-col items-start py-1 px-3 absolute">
+              <button @click="$store.dispatch('updateSort', 'created'); showSortDropdown = false" class="text-green-700 hover:text-green-500 py-1">Created</button>
+              <button @click="$store.dispatch('updateSort', 'updated'); showSortDropdown = false" class="text-green-700 hover:text-green-500 py-1">Updated</button>
+              <button @click="$store.dispatch('updateSort', 'actor_name'); showSortDropdown = false" class="text-green-700 hover:text-green-500 py-1">Character Name</button>
+              <button @click="$store.dispatch('updateSort', 'player_name'); showSortDropdown = false" class="text-green-700 hover:text-green-500 py-1">Player Name</button>
+            </div>
+          </div>
+
         </div>
-        
-        <button @click.prevent="showActorAdd = !showActorAdd" class="px-2 py-1 bg-green-700 hover:bg-green-600 text-white rounded">
+
+        <button @click.prevent="showActorAdd = !showActorAdd" class="px-2 py-1 bg-green-700 hover:bg-green-600 text-white rounded self-end sm:self-auto mx-2 sm:mx-0">
           {{showActorAdd ? 'Cancel' : 'Create'}}
         </button>
+
       </div>
     </transition>
 
     <transition name="fade" mode="out-in">
       <!-- Create actor form -->
-      <div v-if="showActorAdd" key="createActorForm" class="w-full mx-12 sm:max-w-2xl bg-white rounded px-2 px-4 py-4 my-8 shadow">
+      <div v-if="showActorAdd" key="createActorForm" class="w-full mx-12 sm:max-w-2xl bg-white rounded px-2 px-4 py-4 shadow">
         <div class="flex justify-between">
           <p>Add an Actor</p>
           <button @click="showActorAdd = false" class="mb-1" title="cancel add actor">
@@ -262,11 +268,13 @@
 
       <!-- Actor list -->
       <div v-if="!savedActorsLoading && !showActorAdd" key="actorList" class="w-full">
-        <div v-if="savedActors.length > 0">
-          <ManageActorSingle v-for="actor in savedActors" :actor="actor" :key="actor.id" v-on:deleteActor="deleteActor" />
+        <div v-if="filteredActors.length > 0">
+          <transition-group name="fade-right" mode="out-in">
+            <ManageActorSingle v-for="actor in filteredActors" :actor="actor" :key="actor.id" v-on:deleteActor="deleteActor" />
+          </transition-group>
         </div>
 
-        <p v-else>We couldn't find any saved actors... Add one?</p>
+        <p v-else>No actors here...</p>
       </div>
     </transition>
 
@@ -314,23 +322,38 @@ export default {
         accentColor: '',
         imageURL: '',
       },
-      filter: 'all',
+      filterActors: 'all',
+      sortActors: 'created',
       showActorAdd: false,
       saveActorFailed: false,
       characterNameFailedValidation: false,
       showSortDropdown: false,
-      sort: 'created',
+    }
+  },
+  watch: {
+    filterActors: function(newFilter, oldFilter) {
+      if(newFilter !== oldFilter) {
+        this.$store.dispatch('filterActors', newFilter);
+      }
+    },
+    sortActors: function(oldSort, newSort) {
+      if(newSort !== oldSort) {
+        this.$store.dispatch('sortActors', newSort);
+      }
     }
   },
   computed: {
     ...mapState([
       'savedActors',
+      'filteredActors',
       'savedActorsLoading',
+      'filterActorsBy',
+      'sortActorsBy',
     ]),
     sortName: function() {
       let sortReturn = '';
 
-      switch(this.sort) {
+      switch(this.$store.state.sort) {
         case 'updated':
           sortReturn = 'Updated';
           break;
@@ -338,7 +361,7 @@ export default {
           sortReturn = 'Player Name'
           break;
         case 'actor_name':
-          sortReturn = 'Actor Name';
+          sortReturn = 'Character Name';
           break;
         default:
           sortReturn = 'Created';
@@ -346,7 +369,7 @@ export default {
       }
 
       return sortReturn;
-    }
+    },
   },
   methods: {
     createActor: function() {
@@ -416,6 +439,19 @@ export default {
   .fade-enter, .fade-leave-to {
     opacity: 0;
     transform: translateY(50px)
+  }
+
+  .fade-right-enter-active, .fade-right-leave-active {
+    transition: all .3s ease;
+  }
+
+  .fade-right-enter, .fade-right-leave-to {
+    opacity: 0;
+    transform: translateX(50px)
+  }
+
+  .fade-right-move {
+    transition: transform 0.3s;
   }
 
 
