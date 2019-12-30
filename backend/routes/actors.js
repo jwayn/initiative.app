@@ -59,4 +59,39 @@ router.post('/', verifyToken, async (req, res, next) => {
 
 });
 
+router.delete('/', verifyToken, async (req, res, next) => {
+    const userId = req.tokenData.user_id;
+    const actor_id = req.body.actor_id;
+    
+    try {
+        const existingActor = await Actor.getOneById(actor_id);
+        if(existingActor && existingActor.owner === userId) {
+            await Actor.delete(actor_id);
+            res.sendStatus(200);
+        } else {
+            res.send(401);
+        }
+    } catch (err) {
+        next(err);
+    }
+})
+
+router.put('/', verifyToken, async (req, res, next) => {
+    const userId = req.tokenData.user_id;
+    const actor_id = req.body.actor.id;
+    const actor = req.body.actor;
+    
+    try {
+        const existingActor = await Actor.getOneById(actor_id);
+        if(existingActor && existingActor.owner === userId) {
+            await Actor.update(actor_id, actor);
+            res.sendStatus(200);
+        } else {
+            res.send(401);
+        }
+    } catch (err) {
+        next(err);
+    }
+})
+
 module.exports = router;

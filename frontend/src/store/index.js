@@ -32,8 +32,15 @@ export default new Vuex.Store({
         },
         updateSavedActors(state, actors) {
             state.savedActors = actors;
-        }
-
+        },
+        deleteSavedActor(state, actor_id) {
+            state.savedActors.forEach(actor => {
+                if(actor.id === actor_id) {
+                    const index = state.savedActors.indexOf(actor);
+                    state.savedActors.splice(index, 1);
+                }
+            })
+        },
     },
     actions: {
         async retrieveToken(context, credentials) {
@@ -62,6 +69,19 @@ export default new Vuex.Store({
                 context.commit('signIn', true);
             }
         },
+        async deleteActor(context, actor_id) {
+            const response = await axios.delete('/actor', {
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'Authorization' : 'Bearer ' + this.state.token
+                },
+                data: {actor_id},
+            });
+
+            if(response.status === 200) {
+                context.commit('deleteSavedActor', actor_id)
+            }
+        },
         async retrieveSavedActors(context) {
 
             this.state.savedActorsLoading = true;
@@ -81,14 +101,11 @@ export default new Vuex.Store({
         },
         async saveActor(context, actor) {
             const response = await axios.post('/actor', actor, {
-            headers: {
-                'Content-Type' : 'application/json',
+                headers: {
+                    'Content-Type' : 'application/json',
                     'Authorization' : 'Bearer ' + this.state.token
                 }
             });
-
-            //eslint-disable-next-line
-            console.log(response);
 
             if(response.status === 200) {
                 const newActor = response.data.returnedActor[0];
@@ -99,6 +116,22 @@ export default new Vuex.Store({
                 console.log('Error in response or somehting');
                 return false;
             }
-        }
+        },
+        async saveEditedActor(context, actor) {
+            const response = await axios.put('/actor', {actor}, {
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'Authorization' : 'Bearer ' + this.state.token
+                }
+            });
+
+            if(response.status === 200) {
+                context.commit('deleteSavedActor', actor.id);
+                context.commit('addToSavedActors', actor);
+                return true;
+            } else {
+                return false;
+            }
+        },
     }
 });

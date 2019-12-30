@@ -5,8 +5,7 @@
       <div
           class="flex flex-row p-3 rounded-b"
           :style="{
-          borderBottom: this.actor.accent_color ? `4px solid ${colors[this.actor.accent_color.split('-')[0]][this.actor.accent_color.split('-')[1]]}` : ''}"
-      >
+          borderBottom: this.actor.accent_color ? `4px solid ${colors[this.actor.accent_color.split('-')[0]][this.actor.accent_color.split('-')[1]]}` : ''}">
         <div class="w-full flex">
           <div class="flex flex-col flex-grow">
             <div class="flex flex-row">
@@ -15,9 +14,8 @@
               :class="this.actor.accent_color ? `bg-${this.actor.accent_color}` : 'bg-gray-700'"
               :style="{backgroundImage: this.actor.image_url ? `url(${this.actor.image_url})` : ''}"
               >
-                <svg
-                  v-if="!this.actor.image_url"
-                  :class="this.actor.accent_color && this.actor.accent_color.split('-')[1] < 400 ? 'text-gray-700' : `text-white` "
+                <svg v-if="!this.actor.npc && !this.actor.image_url"
+                  :class="this.actor.accentColor && this.actor.accentColor.split('-')[1] < 400 ? 'text-gray-700' : `text-white` "
                   class="text-white fill-current"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -25,8 +23,19 @@
                   height="24"
                 >
                   <path
-                  d="M4 22a8 8 0 1 1 16 0H4zm8-9c-3.315 0-6-2.685-6-6s2.685-6 6-6 6 2.685 6 6-2.685 6-6 6z"
+                    d="M4 22a8 8 0 1 1 16 0H4zm8-9c-3.315 0-6-2.685-6-6s2.685-6 6-6 6 2.685 6 6-2.685 6-6 6z"
                   />
+                </svg>
+
+                <svg v-if="this.actor.npc && !this.actor.image_url"
+                  :class="this.actor.accentColor && this.actor.accentColor.split('-')[1] < 400 ? 'text-gray-700' : `text-white` "
+                  class="text-white fill-current"
+                  xmlns="http://www.w3.org/2000/svg" 
+                  viewBox="0 0 24 24" 
+                  width="24" 
+                  height="24"
+                >
+                  <path d="M18 18v3a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-3H3a1 1 0 0 1-1-1v-5C2 6.477 6.477 2 12 2s10 4.477 10 10v5a1 1 0 0 1-1 1h-3zM7.5 14a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm9 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
                 </svg>
               </div>
               <div class="flex flex-col justify-between flex-grow">
@@ -58,21 +67,27 @@
             </div>
           </div>
           <div class="flex flex-col ml-2 justify-start">
-            <button @click="$emit('deleteActor', index)" class="mb-1" title="Remove actor from combat">
+            <button @click="$emit('deleteActor', actor.id)" class="mb-1" title="Remove actor from combat">
               <svg class="text-gray-500 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
                 <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/>
               </svg>
             </button>
-            <svg class="text-gray-500 fill-current mb-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-              <path d="M21 6.757l-2 2V4h-9v5H5v11h14v-2.757l2-2v5.765a.993.993 0 0 1-.993.992H3.993A1 1 0 0 1 3 20.993V8l6.003-6h10.995C20.55 2 21 2.455 21 2.992v3.765zm.778 2.05l1.414 1.415L15.414 18l-1.416-.002.002-1.412 7.778-7.778z"/>
-            </svg>
+
+            <button @click="showEditActor = !showEditActor" class="mb-1" title="Remove actor from combat">
+              <svg class="text-gray-500 fill-current mb-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                <path d="M21 6.757l-2 2V4h-9v5H5v11h14v-2.757l2-2v5.765a.993.993 0 0 1-.993.992H3.993A1 1 0 0 1 3 20.993V8l6.003-6h10.995C20.55 2 21 2.455 21 2.992v3.765zm.778 2.05l1.414 1.415L15.414 18l-1.416-.002.002-1.412 7.778-7.778z"/>
+              </svg>
+            </button>
           </div>
         </div>
       </div>
+      <EditSavedActorForm v-on:closeEditActor="showEditActor = false" :propsActor="actor" v-if="showEditActor" />
   </div>
 </template>
 
 <script>
+import EditSavedActorForm from './EditSavedActorForm';
+
 export default {
     data() {
         return {
@@ -188,10 +203,14 @@ export default {
                 900: '#902459',
                 },
             },
+            showEditActor: false,
         }
     },
     props: {
         actor: Object,
+    },
+    components: {
+      EditSavedActorForm,
     }
 }
 </script>

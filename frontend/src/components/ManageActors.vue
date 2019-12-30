@@ -224,7 +224,7 @@
         </div>
         <!-- End Passives -->
 
-        <ColorPicker v-on:pickColor="pickColor" />
+        <ColorPicker :selectedColor="actor.accentColor" v-on:pickColor="pickColor" />
 
 
         <div class="w-full flex justify-center mt-8">
@@ -238,7 +238,7 @@
     <!-- Actor list -->
     <div v-if="!savedActorsLoading && !showActorAdd" class="w-full">
       <div v-if="savedActors.length > 0">
-        <ManageActorSingle v-for="actor in savedActors" :actor="actor" :key="actor.id" />
+        <ManageActorSingle v-for="actor in savedActors" :actor="actor" :key="actor.id" v-on:deleteActor="deleteActor" />
       </div>
 
       <p v-else>We couldn't find any saved actors... Add one?</p>
@@ -311,6 +311,9 @@ export default {
         })
       }
     },
+    deleteActor: function(actor_id) {
+      this.$store.dispatch('deleteActor', actor_id);
+    },
     verifyForm: function() {
       if(this.actor.characterName.trim().length < 1) {
         this.characterNameFailedValidation = true;
@@ -346,6 +349,7 @@ export default {
       this.actor.passiveInsight = '';
       this.actor.accentColor = '';
       this.actor.imageURL = '';
+      this.showActorAdd = false;
     },
   },
   mounted() {

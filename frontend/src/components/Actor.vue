@@ -39,7 +39,7 @@
                 class="rounded-full w-16 h-16 flex items-center justify-center mr-4 min-w-16"
                 :class="this.actor.accentColor ? `bg-${this.actor.accentColor}` : 'bg-gray-700' "
               >
-                <svg
+                <svg v-if="!this.actor.npc && !this.actor.image_url"
                   :class="this.actor.accentColor && this.actor.accentColor.split('-')[1] < 400 ? 'text-gray-700' : `text-white` "
                   class="text-white fill-current"
                   xmlns="http://www.w3.org/2000/svg"
@@ -50,6 +50,17 @@
                   <path
                     d="M4 22a8 8 0 1 1 16 0H4zm8-9c-3.315 0-6-2.685-6-6s2.685-6 6-6 6 2.685 6 6-2.685 6-6 6z"
                   />
+                </svg>
+
+                <svg v-if="this.actor.npc && !this.actor.image_url"
+                  :class="this.actor.accentColor && this.actor.accentColor.split('-')[1] < 400 ? 'text-gray-700' : `text-white` "
+                  class="text-white fill-current"
+                  xmlns="http://www.w3.org/2000/svg" 
+                  viewBox="0 0 24 24" 
+                  width="24" 
+                  height="24"
+                >
+                  <path d="M18 18v3a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-3H3a1 1 0 0 1-1-1v-5C2 6.477 6.477 2 12 2s10 4.477 10 10v5a1 1 0 0 1-1 1h-3zM7.5 14a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm9 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
                 </svg>
               </div>
               <div class="flex flex-col flex-grow">

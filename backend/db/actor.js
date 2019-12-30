@@ -16,7 +16,9 @@ module.exports = {
     delete: function(id) {
         return knex('actors').where('id', id).del();
     },
-    update: function(actor, id) {
-        return knex('actors').where('id', id).update(actor);
+    update: function(id, actor) {
+        let newActor = actor;
+        newActor.updated = new Date();
+        return knex('actors').where('id', id).update(newActor);
     },
 };

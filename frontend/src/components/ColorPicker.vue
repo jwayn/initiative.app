@@ -167,8 +167,10 @@ export default {
             },
             step: 1,
             showColors: false,
-            selectedColor: '',
         }
+    },
+    props: {
+        selectedColor: String,
     },
     methods: {
         setBaseColor: function(color) {
@@ -177,9 +179,9 @@ export default {
         },
         pickColor: function(color, value) {
             this.step = 1;
-            this.selectedColor = color + '-' + value;
+            const selectedColor = color + '-' + value;
             this.showColors = false;
-            this.$emit('pickColor', this.selectedColor);
+            this.$emit('pickColor', selectedColor);
         }
     }
 }
