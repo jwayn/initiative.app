@@ -41,6 +41,13 @@ export default new Vuex.Store({
                 }
             })
         },
+        updateSavedActor(state, newActor) {
+            state.savedActors.forEach(actor => {
+                if(actor.id === newActor.id) {
+                    Object.assign(actor, newActor);
+                }
+            })
+        }
     },
     actions: {
         async retrieveToken(context, credentials) {
@@ -126,8 +133,9 @@ export default new Vuex.Store({
             });
 
             if(response.status === 200) {
-                context.commit('deleteSavedActor', actor.id);
-                context.commit('addToSavedActors', actor);
+                // context.commit('deleteSavedActor', actor.id);
+                // context.commit('addToSavedActors', actor);
+                context.commit('updateSavedActor', actor);
                 return true;
             } else {
                 return false;

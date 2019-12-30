@@ -81,7 +81,9 @@
           </div>
         </div>
       </div>
-      <EditSavedActorForm v-on:closeEditActor="showEditActor = false" :propsActor="actor" v-if="showEditActor" />
+      <transition name="form-slider">
+        <EditSavedActorForm v-on:closeEditActor="showEditActor = false" :propsActor="actor" v-if="showEditActor" />
+      </transition>
   </div>
 </template>
 
@@ -216,5 +218,11 @@ export default {
 </script>
 
 <style>
+  .form-slider-enter-active, .form-slider-leave-active {
+    transition: all .3s;
+  }
 
+  .form-slider-enter, .form-slider-leave-to {
+    opacity: 0;
+  }
 </style>
