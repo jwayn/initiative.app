@@ -9,8 +9,11 @@ const User = require('../db/user')
 
 const router = express.Router();
 
+<<<<<<< HEAD
 
 // Function for testing slow api response
+=======
+>>>>>>> e0336d82498641c65c42ee02f016a7fd1e027ad8
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -29,7 +32,11 @@ function validUser(user) {
 
 router.post('/signin', async (req, res, next) => {
     try{
+<<<<<<< HEAD
         //await sleep(3000);
+=======
+        await sleep(3000);
+>>>>>>> e0336d82498641c65c42ee02f016a7fd1e027ad8
         if(validUser(req.body)) {
             const user = await User.getOneByEmail(req.body.email);
             if(user) {
