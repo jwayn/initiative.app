@@ -32,8 +32,21 @@
             </button>
           </div>
 
-          <div class="mx-2 mb-4 sm:mb-0">
-            <button @click="showSortDropdown = !showSortDropdown" class="bg-green-700 rounded px-2 py-1 text-white">Sort by: {{sortName}}</button>
+          <div class="mx-2 mb-4 sm:mb-0 relative">
+            <button @click="showSortDropdown = !showSortDropdown" class="bg-green-700 rounded px-2 py-1 pr-8 text-white">Sort by: {{sortName}}</button>
+            <div
+              class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-gray-700"
+            >
+              <svg
+                class="fill-current text-white h-4 w-4"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"
+                />
+              </svg>
+            </div>
             <div v-if="showSortDropdown" class="rounded border border-green-600 bg-white flex flex-col items-start py-1 px-3 absolute">
               <button @click="$store.dispatch('updateSort', 'created'); showSortDropdown = false" class="text-green-700 hover:text-green-500 py-1">Created</button>
               <button @click="$store.dispatch('updateSort', 'updated'); showSortDropdown = false" class="text-green-700 hover:text-green-500 py-1">Updated</button>
