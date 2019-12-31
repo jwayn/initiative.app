@@ -14,14 +14,19 @@ export default {
   name: 'app',
   components: {
     Banner,
-  }
+  },
+  mounted() {
+    if(localStorage.getItem('currentInitiativeTracker')) {
+      this.$store.dispatch('setTrackerFromLocal', JSON.parse(localStorage.getItem('currentInitiativeTracker')));
+    }
+  },
 }
 </script>
 
 <style>
-@tailwind base;
+  @tailwind base;
 
-@tailwind components;
+  @tailwind components;
 
-@tailwind utilities;
+  @tailwind utilities;
 </style>

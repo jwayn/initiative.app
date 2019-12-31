@@ -1,7 +1,8 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import axios from 'axios';
-import router from '@/router'
+import router from '@/router';
+import uuidv4 from 'uuid';
 
 axios.defaults.baseURL = 'http://localhost:3000/';
 
@@ -11,11 +12,12 @@ export default new Vuex.Store({
     state: {
         token: localStorage.getItem('token') || null,
         currentInitiativeTracker: {
-            actors: {},
+            actors: [],
+            started: false,
         },
         savedActors: [],
         filteredActors: [],
-        savedActorsLoading: true,
+        savedActorsLoading: false,
         filter: 'all',
         sort: 'created',
     },
@@ -23,6 +25,9 @@ export default new Vuex.Store({
         isSignedIn: state => {
             return state.token !== null;
         },
+        currentTrackerActors: state => {
+            return state.currentInitiativeTracker.actors;
+        }
     },
     mutations: {
         updateToken(state, token) {
@@ -54,7 +59,34 @@ export default new Vuex.Store({
         },
         updateFilteredActors(state, actors) {
             state.filteredActors = actors;
-        }
+        },
+        addActorToCurrentTracker(state, actor) {
+            state.currentInitiativeTracker.actors.push({...actor});
+            localStorage.setItem('currentInitiativeTracker', JSON.stringify(state.currentInitiativeTracker));
+        },
+        addSavedActorToCurrentTracker(state, actor) {
+            let newActor = {...actor};
+            newActor.id = uuidv4();
+            state.currentInitiativeTracker.actors.push(newActor);
+            localStorage.setItem('currentInitiativeTracker', JSON.stringify(state.currentInitiativeTracker));
+        },
+        linkSavedActorToCurrentTracker(state, actor) {
+            if(!state.currentInitiativeTracker.actors.find(listActor => listActor.id === actor.id)){
+                state.currentInitiativeTracker.actors.push(actor);
+                localStorage.setItem('currentInitiativeTracker', JSON.stringify(state.currentInitiativeTracker));
+            }
+        },
+        updateActorCurrentHealth(state, newActor) {
+            const actor = state.currentInitiativeTracker.actors.find(actor => actor.id === newActor.actorId);
+            actor.current_hit_points = newActor.newHealth;
+        },
+        updateCurrentTracker(state, newTracker) {
+            state.currentInitiativeTracker = newTracker;
+        },
+        clearCurrentTracker(state) {
+            localStorage.removeItem('currentInitiativeTracker');
+            state.currentInitiativeTracker = {actors: []}
+        },
     },
     actions: {
         async retrieveToken(context, credentials) {
@@ -178,6 +210,24 @@ export default new Vuex.Store({
                 return false;
             }
         },
+        setTrackerFromLocal(context, newTracker) {
+            context.commit('updateCurrentTracker', newTracker);
+        },
+        addActor(context, actor) {
+            context.commit('addActorToCurrentTracker', actor);
+        },
+        linkSavedActorToCurrentTracker(context, actor) {
+            let newActor = {...actor};
+            newActor.current_hit_points = actor.total_hit_points;
+            newActor.initiative = null;
+            newActor.is_linked = true;
+            context.commit('linkSavedActorToCurrentTracker', newActor)
+        },
+        addSavedActorToCurrentTracker(context, actor) {
+            actor.current_hit_points = actor.total_hit_points;
+            actor.initiative = null;
+            context.commit('addSavedActorToCurrentTracker', actor);
+        },
         updateFilter(context, filter) {
             this.state.filter = filter;
 
@@ -187,6 +237,9 @@ export default new Vuex.Store({
             } else {
                 context.commit('updateFilteredActors', this.state.savedActors)
             }
+        },
+        updateActorCurrentHealth(context, actor) {
+            context.commit('updateActorCurrentHealth', actor)
         },
         updateSort(context, sort) {
             this.state.sort = sort;
@@ -209,6 +262,9 @@ export default new Vuex.Store({
                 sortedActors.reverse();
             }
             context.commit('updateFilteredActors', sortedActors);
+        },
+        clearCurrentTracker(context) {
+            context.commit('clearCurrentTracker');
         }
     }
 });

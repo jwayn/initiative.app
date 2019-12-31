@@ -1,46 +1,57 @@
 <template>
   <div class="my-5 cursor-pointer">
-    <div v-if="index==0">
+    <div v-if="index==0 && $store.state.currentInitiativeTracker.started">
       <span class="ml-3 text-lg text-gray-500 font-light">
           Current
       </span>
     </div>
-    <div v-if="index==1" class="mt-5">
+    <div v-if="index==1 && $store.state.currentInitiativeTracker.started" class="mt-5">
       <span class="ml-3 text-lg text-gray-500 font-light">
           Up Next
       </span>
     </div>
-    <div v-if="index==2" class="mt-5">
+    <div v-if="index==2 && $store.state.currentInitiativeTracker.started" class="mt-5">
       <span class="ml-3 text-lg text-gray-500 font-light">
           Coming Up
       </span>
     </div>
     <div 
-      class="m-2 rounded shadow bg-gray-200"
+      class="m-2 rounded shadow"
+      :class="this.checkSavedActor.accent_color ? `bg-${this.checkSavedActor.accent_color.split('-')[0]}-100` : 'bg-gray-200'"
       :id="`index-${index}`"
     >
-
       <!-- health indicator -->
-      <div class="h-1 rounded-t bg-red-600">
-        <div class="bg-green-600 h-full rounded-t animate-width" :style="{width: this.healthWidth + '%'}">
+      <div v-if="this.checkSavedActor.total_hit_points" class=" h-6 rounded-t bg-red-600 relative">
+        <div v-if="this.checkSavedActor.total_hit_points" class="absolute w-full flex justify-center">
+          <button @click="showHealthModal = !showHealthModal">
+            <span class="text-white">{{actor.current_hit_points}}</span><span class="font-light text-white">/</span><span class="text-white">{{checkSavedActor.total_hit_points}}</span>
+          </button>
+          <div v-if="showHealthModal" class="health-modal bg-white absolute shadow p-2 rounded">
+              <input v-model="healthAmountToChange" class="w-full shadow mb-1 px-2" type="number">
+              <div class="flex justify-between m-2">
+                <button @click="damage" class="border border-red-600 text-red-600 rounded px-1">Damage</button>
+                <button @click="heal" class="border border-green-600 text-green-600 rounded px-1">Heal</button>
+              </div>
+          </div>
         </div>
+        <div class="bg-green-600 h-full animate-width flex justify-center" :class="this.healthWidth < 100 ? 'rounded-tl' : 'rounded-t'" :style="{width: this.healthWidth + '%'}"></div>
       </div>
       
       <!-- rest of actor -->
       <div
         class="flex flex-row p-3 rounded-b"
         :style="{
-          borderBottom: this.actor.accentColor ? `4px solid ${colors[this.actor.accentColor.split('-')[0]][this.actor.accentColor.split('-')[1]]}` : ''}"
-      >
+          borderLeft: this.checkSavedActor.accent_color ? `4px solid ${colors[this.checkSavedActor.accent_color.split('-')[0]][this.checkSavedActor.accent_color.split('-')[1]]}` : ''}">
         <div class="w-full flex">
           <div class="flex flex-col flex-grow">
             <div class="flex flex-row">
               <div
-                class="rounded-full w-16 h-16 flex items-center justify-center mr-4 min-w-16"
-                :class="this.actor.accentColor ? `bg-${this.actor.accentColor}` : 'bg-gray-700' "
+                class="rounded-full w-16 h-16 flex items-center justify-center mr-4 min-w-16 bg-center bg-cover shadow"
+                :class="this.checkSavedActor.accent_color ? `bg-${this.checkSavedActor.accent_color}` : 'bg-gray-700' "
+                :style="{backgroundImage: this.checkSavedActor.image_url ? `url(${this.checkSavedActor.image_url})` : ''}"
               >
-                <svg v-if="!this.actor.npc && !this.actor.image_url"
-                  :class="this.actor.accentColor && this.actor.accentColor.split('-')[1] < 400 ? 'text-gray-700' : `text-white` "
+                <svg v-if="!this.checkSavedActor.npc && !this.checkSavedActor.image_url"
+                  :class="this.checkSavedActor.accent_color && this.checkSavedActor.accent_color.split('-')[1] < 400 ? 'text-gray-700' : `text-white` "
                   class="text-white fill-current"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -52,8 +63,8 @@
                   />
                 </svg>
 
-                <svg v-if="this.actor.npc && !this.actor.image_url"
-                  :class="this.actor.accentColor && this.actor.accentColor.split('-')[1] < 400 ? 'text-gray-700' : `text-white` "
+                <svg v-if="this.checkSavedActor.npc && !this.checkSavedActor.image_url"
+                  :class="this.checkSavedActor.accent_color && this.checkSavedActor.accent_color.split('-')[1] < 400 ? 'text-gray-700' : `text-white` "
                   class="text-white fill-current"
                   xmlns="http://www.w3.org/2000/svg" 
                   viewBox="0 0 24 24" 
@@ -66,26 +77,41 @@
               <div class="flex flex-col flex-grow">
                 <div class="flex justify-between pb-1">
                   <div class="flex flex-wrap">
-                    <span class="text-lg font-bold text-gray-800 pr-2">{{actor.initiative}}</span>
+
+
+                    <span class="text-lg font-bold text-gray-800" :class="checkSavedActor.initiative ? 'pr-2' : ''">{{checkSavedActor.initiative}}</span>
+                    
+                    <span v-if="this.actor.is_linked && isSignedIn" class="flex items-center mr-1 text-gray-600">
+                      <svg class="fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
+                        <path d="M18.364 15.536L16.95 14.12l1.414-1.414a5 5 0 1 0-7.071-7.071L9.879 7.05 8.464 5.636 9.88 4.222a7 7 0 0 1 9.9 9.9l-1.415 1.414zm-2.828 2.828l-1.415 1.414a7 7 0 0 1-9.9-9.9l1.415-1.414L7.05 9.88l-1.414 1.414a5 5 0 1 0 7.071 7.071l1.414-1.414 1.415 1.414zm-.708-10.607l1.415 1.415-7.071 7.07-1.415-1.414 7.071-7.07z"/>
+                      </svg>
+                    </span>
+
+                    <span v-if="this.actor.is_linked && !isSignedIn" class="flex items-center mr-1 text-gray-600">
+                      <svg  class="fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                        <path d="M17.657 14.828l-1.414-1.414L17.657 12A4 4 0 1 0 12 6.343l-1.414 1.414-1.414-1.414 1.414-1.414a6 6 0 0 1 8.485 8.485l-1.414 1.414zm-2.829 2.829l-1.414 1.414a6 6 0 1 1-8.485-8.485l1.414-1.414 1.414 1.414L6.343 12A4 4 0 1 0 12 17.657l1.414-1.414 1.414 1.414zm0-9.9l1.415 1.415-7.071 7.07-1.415-1.414 7.071-7.07zM5.775 2.293l1.932-.518L8.742 5.64l-1.931.518-1.036-3.864zm9.483 16.068l1.931-.518 1.036 3.864-1.932.518-1.035-3.864zM2.293 5.775l3.864 1.036-.518 1.931-3.864-1.035.518-1.932zm16.068 9.483l3.864 1.035-.518 1.932-3.864-1.036.518-1.931z"/>
+                      </svg>
+                    </span>
+
                     <span 
                       class="font-medium text-gray-800 text-lg pr-3"
-                      :class="this.actor.accentColor && this.actor.accentColor.split('-')[1] < 400 ? `text-${this.actor.accentColor.split('-')[0]}-400` : `text-${this.actor.accentColor}` "
+                      :class="this.checkSavedActor.accent_color && this.checkSavedActor.accent_color.split('-')[1] < 400 ? `text-${this.checkSavedActor.accent_color.split('-')[0]}-400` : `text-${this.checkSavedActor.accent_color}` "
                       
                     >
-                      {{actor.characterName}}
+                      {{checkSavedActor.actor_name}}
                     </span>
-                    <span class="font-light text-gray-600 text-lg">{{actor.playerName}}</span>
+                    <span class="font-light text-gray-600 text-lg">{{checkSavedActor.player_name}}</span>
                   </div>
                 </div>
-                  <div class="mt-2 flex flex-row justify-start">
-                    <div>
+                  <div v-if="this.checkSavedActor.total_hit_points || this.checkSavedActor.armor_class" class="mt-2 flex flex-row justify-start">
+                    <div v-if="this.checkSavedActor.armor_class">
                       <span class="mr-1 font-light text-gray-600">AC</span>
-                      <span class="mr-2">{{actor.armorClass}}</span>
+                      <span class="mr-2">{{checkSavedActor.armor_class}}</span>
                     </div>
-                    <div class="relative">
+                    <!-- <div v-if="this.checkSavedActor.total_hit_points" class="relative">
                       <button @click="showHealthModal = !showHealthModal">
                         <span class="mr-1 font-light text-gray-600">HP</span>
-                        <span>{{actor.currentHitPoints}}</span><span class="font-light text-gray-600">/</span><span>{{actor.totalHitPoints}}</span>
+                        <span>{{current_hit_points}}</span><span class="font-light text-gray-600">/</span><span>{{checkSavedActor.total_hit_points}}</span>
                       </button>
                       <div v-if="showHealthModal" class="health-modal bg-white absolute shadow p-2 rounded">
                           <input v-model="healthAmountToChange" class="w-full shadow mb-1 px-2" type="number">
@@ -94,7 +120,7 @@
                             <button @click="heal" class="border border-green-600 text-green-600 rounded px-1">Heal</button>
                           </div>
                       </div>
-                    </div>
+                    </div> -->
                   </div>
               </div>
             </div>
@@ -128,7 +154,9 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 export default {
+
   data: function() {
     return {
       showHealthModal: false,
@@ -253,23 +281,39 @@ export default {
   },
   methods: {
     damage: function() {
-      if(this.actor.currentHitPoints - Number(this.healthAmountToChange) <= 0) {
-        this.actor.currentHitPoints = 0;
+      if(this.actor.current_hit_points - Number(this.healthAmountToChange) <= 0) {
+        this.$store.dispatch('updateActorCurrentHealth', {actorId: this.actor.id, newHealth: 0})
       } else {
-        this.actor.currentHitPoints -= Number(this.healthAmountToChange);
+        this.$store.dispatch('updateActorCurrentHealth', {actorId: this.actor.id, newHealth: Number(this.actor.current_hit_points) - Number(this.healthAmountToChange)});
       }
     },
     heal: function() {
-      if(this.actor.currentHitPoints + Number(this.healthAmountToChange) >= this.actor.totalHitPoints) {
-        this.actor.currentHitPoints = this.actor.totalHitPoints;
+      if(this.actor.current_hit_points + Number(this.healthAmountToChange) >= this.checkSavedActor.total_hit_points) {
+        this.$store.dispatch('updateActorCurrentHealth', {actorId: this.actor.id, newHealth: this.checkSavedActor.total_hit_points})
       } else {
-        this.actor.currentHitPoints += Number(this.healthAmountToChange);
+        this.$store.dispatch('updateActorCurrentHealth', {actorId: this.actor.id, newHealth: Number(this.actor.current_hit_points) + Number(this.healthAmountToChange)});
       }
     },
   },
   computed: {
+    ...mapGetters(['isSignedIn',]),
     healthWidth: function() {
-      return Math.ceil((this.actor.currentHitPoints / this.actor.totalHitPoints) * 100);
+      return Math.ceil((this.actor.current_hit_points / this.checkSavedActor.total_hit_points) * 100);
+    },
+    checkSavedActor: function() {
+      if(this.actor.is_linked && this.$store.state.isSignedIn) {
+        //74b6a57f-9e98-4f50-ac9e-62a3371108de
+        //eslint-disable-next-line 
+        console.log(this.$store.state.savedActors)
+        //eslint-disable-next-line 
+        console.log('computer property lelx')
+        //eslint-disable-next-line
+        console.log(this.actor.id);
+        //eslint-disable-next-line
+        console.log(this.$store.state.savedActors.find(actor => actor.id === this.actor.id))
+        return this.$store.state.savedActors.find(actor => actor.id === this.actor.id)
+      }
+      return this.actor;
     },
   }
 };
@@ -297,7 +341,7 @@ export default {
   }
 
   .animate-width {
-    transition: width .3s cubic-bezier(.2,.98,.24,.39);
+    transition: width .5s ease-in-out;
   }
 
   .text-shadow {

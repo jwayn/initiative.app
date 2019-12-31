@@ -1,5 +1,5 @@
 <template>                                                      
-    <div class="bg-gray-100 w-full max-w-3xl">
+    <div v-if="!$store.state.savedActorsLoading" class="bg-gray-100 w-full max-w-3xl">
         <div class="flex items-center justify-between m-2 mt-3 mb-4">
             <div>
                 <span class="text-lg font-light">Jason's Party</span> 
@@ -8,144 +8,120 @@
                 <span class="text-lg font-light">Party Code: </span><span class="text-lg font-medium">DOGE</span>
             </div>
         </div>
-        <div class="flex justify-end">
-            <button class="rounded border border-green-600 p-1 px-3 text-green-600 font-thin uppercase mr-2">
-                Add Actor
-            </button>
-            <button @click="nextTurn()" class="rounded border bg-green-600 p-1 px-3 text-white font-thin uppercase hover:bg-green-500 mr-2">
-                Next Turn
-            </button>
-        </div>
         
-        <draggable v-model="actors" @start="drag=true" @end="drag=false" :options="{delay:400, delayOnTouchOnly: true}" class="pt-10 pb-10" v-if="actors">
+        <!-- Initiative Controls -->
+        <div class="flex justify-between">
+            <div class="flex justify-start mb-4">
+                <!-- Clear encounter -->
+                <button @click="showConfirmClearTracker = true" v-if="currentTrackerActors.length" title="Clear the tracker" class="border border-green-700 rounded bg-white text-green-700 hover:text-green-500 p-2 mx-1 flex">
+                    <svg class="fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                        <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="flex justify-end mb-4">
+                
+                <!-- Save encounter -->
+                <button title="Save this encounter" v-if="$store.getters.isSignedIn && currentTrackerActors.length" class="border border-green-700 rounded bg-white text-green-700 hover:text-green-500 p-2 mx-1 flex">
+                    <svg class="fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                        <path d="M4 3h14l2.707 2.707a1 1 0 0 1 .293.707V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm3 1v5h9V4H7zm-1 8v7h12v-7H6zm7-7h2v3h-2V5z"/>
+                    </svg>
+                </button>
+                
+                <!-- Start encounter -->
+                <button title="Start this encounter" v-if="!initiativeActive && currentTrackerActors.length" class="border border-green-700 rounded bg-white text-green-700 hover:text-green-500 p-2 mx-1 flex">
+                    <svg class="fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                        <path d="M19.376 12.416L8.777 19.482A.5.5 0 0 1 8 19.066V4.934a.5.5 0 0 1 .777-.416l10.599 7.066a.5.5 0 0 1 0 .832z"/>
+                    </svg>
+                </button>
+
+                <!-- Stop encounter -->
+                <button title="Stop this encounter" v-if="initiativeActive" class="border border-green-700 rounded bg-white text-green-700 hover:text-green-500 p-2 mx-1 flex">
+                    <svg class="fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                        <path d="M6 7v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/>
+                    </svg>
+                </button>
+
+                <!-- Add actor -->
+                <button @click.prevent="showAddActor = !showAddActor" title="Add an actor to this encounter" class="border border-green-700 hover:text-green-500 rounded bg-white text-green-700 p-2 mx-1 flex">
+                    <svg class="fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                        <path d="M2 18h10v2H2v-2zm0-7h20v2H2v-2zm0-7h20v2H2V4zm16 14v-3h2v3h3v2h-3v3h-2v-3h-3v-2h3z"/>
+                    </svg>
+                </button>
+
+                <!-- Next turn -->
+                <button @click.prevent="nextTurn" v-if="currentTrackerActors.length && $store.state.currentInitiativeTracker.started" title="Next turn" class="border border-green-700 rounded bg-white text-green-700 hover:text-green-500 p-2 mx-1 flex">
+                    <svg class="fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                        <path d="M7.788 17.444A.5.5 0 0 1 7 17.035V6.965a.5.5 0 0 1 .788-.409l7.133 5.036a.5.5 0 0 1 0 .816l-7.133 5.036zM16 7a1 1 0 0 1 2 0v10a1 1 0 1 1-2 0V7z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <AddActor v-if="showAddActor" @closeAddActor="showAddActor = false" />
+        
+        <draggable v-model="$store.state.currentInitiativeTracker.actors" @start="drag=true" @end="drag=false" :options="{delay:400, delayOnTouchOnly: true}" class="pb-10" v-if="currentTrackerActors">
             <transition-group name="actor-list" tag="div">
-                <Actor v-on:deleteActor="deleteActor" v-for="n in actors.length" :actor="actors[n-1]" :index="n - 1" :key="actors[n-1].id" />
+                <Actor v-on:deleteActor="deleteActor" v-for="n in currentTrackerActors.length" :actor="currentTrackerActors[n-1]" :index="n - 1" :key="currentTrackerActors[n-1].id" />
             </transition-group>
         </draggable>
         <div v-else>
             Add actors to track
         </div>
     </div>
+
+    <div v-else class="mt-12">
+        <Loader />
+    </div>
 </template>
 
 <script>
 import Actor from './Actor.vue'
+import AddActor from './AddActor'
 import draggable from 'vuedraggable'
+import Loader from './Loader';
+
+import { mapGetters } from 'vuex';
 
 export default {
     data() {
         return {
-            actors: [
-                {
-                    characterName: 'Dacke Silentstep',
-                    playerName: 'Davin',
-                    passivePerception: 20,
-                    passiveInvestigation: 21,
-                    passiveInsight: 10,
-                    armorClass: 17,
-                    currentHitPoints: 94,
-                    totalHitPoints: 94,
-                    alignment: 'NG',
-                    class: ['rogue'],
-                    race: 'halfling',
-                    level: 13,
-                    initiativeModifier: 5,
-                    initiative: 20,
-                    id: 0,
-                    accentColor: 'red-400',
-                    visibleToGuests: true,
-                },
-                {
-                    characterName: 'Carhan',
-                    playerName: 'Scott',
-                    passivePerception: 20,
-                    passiveInvestigation: 15,
-                    passiveInsight: 20,
-                    armorClass: 15,
-                    currentHitPoints: 94,
-                    totalHitPoints: 94,
-                    alignment: 'NG',
-                    class: ['rogue', 'bard'],
-                    race: 'tabaxi',
-                    level: 13,
-                    initiativeModifier: 9,
-                    initiative: 20,
-                    id: 1,
-                    visibleToGuests: true,
-                },
-                {
-                    characterName: 'Ladybug',
-                    playerName: 'Carma',
-                    passivePerception: 10,
-                    passiveInvestigation: 10,
-                    passiveInsight: 10,
-                    armorClass: 16,
-                    currentHitPoints: 108,
-                    totalHitPoints: 108,
-                    alignment: 'NG',
-                    class: ['fighter'],
-                    race: 'firbolg',
-                    level: 13,
-                    initiativeModifier: 6,
-                    initiative: 20,
-                    id: 2,
-                    accentColor: 'teal-100',
-                    visibleToGuests: true,
-                },
-                {
-                    characterName: 'Stavinn Shadowgrave',
-                    playerName: 'Leon',
-                    passivePerception: 22,
-                    passiveInvestigation: 29,
-                    passiveInsight: 12,
-                    armorClass: 14,
-                    currentHitPoints: 83,
-                    totalHitPoints: 83,
-                    alignment: 'NG',
-                    class: ['wizard', 'rogue'],
-                    race: 'human',
-                    level: 13,
-                    initiativeModifier: 6,
-                    initiative: 20,
-                    id: 3,
-                    accentColor: 'indigo-600',
-                    visibleToGuests: true,
-                },
-                {
-                    characterName: 'Venzana',
-                    playerName: 'Simon',
-                    passivePerception: 17,
-                    passiveInvestigation: 9,
-                    passiveInsight: 12,
-                    armorClass: 14,
-                    currentHitPoints: 135,
-                    totalHitPoints: 135,
-                    alignment: 'NG',
-                    class: ['barbarian'],
-                    race: 'centaur',
-                    level: 13,
-                    initiativeModifier: 1,
-                    initiative: 20,
-                    id: 4,
-                    accentColor: 'orange-600',
-                    visibleToGuests: false,
-                },
-            ],
             menuOpen: false,
+            showAddActor: false,
+            initiativeActive: false,
+            showConfirmClearTracker: false,
         }
     },
     components: {
         Actor,
+        AddActor,
         draggable,
+        Loader,
     },
     methods: {
         nextTurn: function() {
-            this.actors.push(this.actors[0]);
-            this.actors.splice(0,1);
+            this.$store.state.currentInitiativeTracker.actors.push(this.$store.state.currentInitiativeTracker.actors[0]);
+            this.$store.state.currentInitiativeTracker.actors.splice(0,1);
+            localStorage.setItem('currentInitiativeTracker', JSON.stringify(this.$store.state.currentInitiativeTracker))
         },
         deleteActor: function(actorIndex) {
-            this.actors.splice(actorIndex, 1)
+            this.$store.state.currentInitiativeTracker.actors.splice(actorIndex, 1);
+            localStorage.setItem('currentInitiativeTracker', JSON.stringify(this.$store.state.currentInitiativeTracker))
         },
+        clearTracker: function() {
+            this.$store.dispatch('clearCurrentTracker');
+        }
+    },
+    computed: {
+        ...mapGetters(['currentTrackerActors', 'isSignedIn'])
+    },
+    mounted() {
+        if(this.isSignedIn) {
+            //eslint-disable-next-line
+            console.log(this.isSignedIn);
+            this.$store.dispatch('retrieveSavedActors');
+        }
     }
 }
 </script>
@@ -164,5 +140,9 @@ export default {
     .actor-list-enter, .actor-list-leave-to {
         opacity: 0;
         transform: translateX(100px);
+    }
+
+    .actor-list-move {
+        transition: transform 0.5s;
     }
 </style>

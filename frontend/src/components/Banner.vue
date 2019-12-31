@@ -16,7 +16,7 @@
             <router-link v-if="isSignedIn" to="/encounters" class="block text-white font-semibold p-2 mt-1 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Encounters</router-link>
             <router-link to="/tracker" class="block text-white font-semibold p-2 mt-1 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Tracker</router-link>
             <router-link v-if="!isSignedIn" to="/signin" class="block text-white font-semibold p-2 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Sign In</router-link>
-            <button v-if="isSignedIn" @click="signOut" class="block text-white font-semibold p-2 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Sign Out</button>
+            <button v-if="isSignedIn" @click="signOut" class="block text-white w-full text-left font-semibold p-2 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Sign Out</button>
         </div>
     </header> 
 </template>

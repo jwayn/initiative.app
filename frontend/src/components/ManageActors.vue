@@ -300,7 +300,7 @@ import ColorPicker from './ColorPicker';
 import ManageActorSingle from './ManageActorSingle';
 import Loader from './Loader';
 
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 
 export default {
   components: {
@@ -362,6 +362,9 @@ export default {
       'savedActorsLoading',
       'filterActorsBy',
       'sortActorsBy',
+    ]),
+    ...mapGetters([
+      'isSignedIn',
     ]),
     sortName: function() {
       let sortReturn = '';
@@ -439,7 +442,11 @@ export default {
     },
   },
   mounted() {
-    this.$store.dispatch('retrieveSavedActors');
+    if(this.isSignedIn) {
+      //eslint-disable-next-line
+      console.log(this.isSignedIn);
+      this.$store.dispatch('retrieveSavedActors');
+    }
   },
 };
 </script>
