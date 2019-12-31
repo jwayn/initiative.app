@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import axios from 'axios';
+import router from '@/router'
 
 axios.defaults.baseURL = 'http://localhost:3000/';
 
@@ -57,29 +58,52 @@ export default new Vuex.Store({
     },
     actions: {
         async retrieveToken(context, credentials) {
-            const response = await axios.post('/user/signin', {
-                email: credentials.email,
-                password: credentials.password,
-            });
-            const token = response.data.token;
-            
-            localStorage.setItem('token', token);
-            context.commit('updateToken', token);
-            context.commit('signIn', true);
+            try{
+                const response = await axios.post('/user/signin', {
+                    email: credentials.email,
+                    password: credentials.password,
+                });
+    
+                if(response.status === 200) {
+                    const token = response.data.token;
+                    
+                    localStorage.setItem('token', token);
+                    context.commit('updateToken', token);
+                    context.commit('signIn', true);
+
+                    router.push('tracker');
+                }
+    
+                return response;
+            } catch (err) {
+                if(err.response) {
+                    return err.response;
+                }
+            }
         },
         async signUp(context, credentials) {
-            const response = await axios.post('/user/signup', {
-                email: credentials.email,
-                username: credentials.username,
-                password: credentials.password,
-            });
+            try {
+                const response = await axios.post('/user/signup', {
+                    email: credentials.email,
+                    username: credentials.username,
+                    password: credentials.password,
+                });
+    
+                if(response.status === 200 && response.data.token) {
+                    const token = response.data.token;
+                    
+                    localStorage.setItem('token', token);
+                    context.commit('retrieveToken', token);
+                    context.commit('signIn', true);
+    
+                    router.push('tracker');
+                }
 
-            if(response.status === 200 && response.data.token) {
-                const token = response.data.token;
-                
-                localStorage.setItem('token', token);
-                context.commit('retrieveToken', token);
-                context.commit('signIn', true);
+                return response;
+            } catch (err) {
+                if(err.response) {
+                    return err.response;
+                }
             }
         },
         async deleteActor(context, actor_id) {
