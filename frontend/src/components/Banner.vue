@@ -12,9 +12,9 @@
             </div>
         </div>
         <div @click="menuOpen = false" :class="menuOpen ? 'block' : 'hidden'" class="px-4 pt-1 pb-4 sm:flex sm:p-0 absolute left-0 sm:right-1 sm:left-auto bg-green-700 w-full sm:w-auto">
-            <router-link to="/actors" class="block text-white font-semibold p-2 mt-1 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Actors</router-link>
+            <router-link v-if="isSignedIn" to="/actors" class="block text-white font-semibold p-2 mt-1 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Actors</router-link>
             <router-link v-if="isSignedIn" to="/encounters" class="block text-white font-semibold p-2 mt-1 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Encounters</router-link>
-            <router-link v-if="isSignedIn" to="/tracker" class="block text-white font-semibold p-2 mt-1 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Tracker</router-link>
+            <router-link to="/tracker" class="block text-white font-semibold p-2 mt-1 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Tracker</router-link>
             <router-link v-if="!isSignedIn" to="/signin" class="block text-white font-semibold p-2 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Sign In</router-link>
             <button v-if="isSignedIn" @click="signOut" class="block text-white font-semibold p-2 text-md hover:bg-green-600 rounded sm:mt-0 sm:ml-2">Sign Out</button>
         </div>
@@ -37,6 +37,7 @@ export default {
         signOut() {
             this.$store.state.token = null;
             localStorage.removeItem('token');
+            this.$router.push('tracker')
         }
     }
 }

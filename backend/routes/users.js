@@ -9,6 +9,13 @@ const User = require('../db/user')
 
 const router = express.Router();
 
+
+// Function for testing slow api response
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
 //Ensure that email/password is valid
 function validUser(user) {
     const validEmail = typeof user.email == 'string' && 
@@ -22,6 +29,7 @@ function validUser(user) {
 
 router.post('/signin', async (req, res, next) => {
     try{
+        //await sleep(3000);
         if(validUser(req.body)) {
             const user = await User.getOneByEmail(req.body.email);
             if(user) {
@@ -35,10 +43,10 @@ router.post('/signin', async (req, res, next) => {
                         });
                     });
                 } else {
-                    next(createError(403, 'Forbidden'));
+                    next(createError(401, 'Incorrect email or password'));
                 }
             } else {
-                next(createError(403, 'Forbidden'));
+                next(createError(401, 'A user with that email does not exist.'));
             };
         };
     } catch (err) {
@@ -68,14 +76,10 @@ router.post('/signup', async (req, res, next) => {
             });
 
         } else {
-            const err = new Error('A user with that email address already exists.');
-            err.status = 400;
-            next(err)
+            next(createError(401, 'A user with that email address already exists.'))
         }
     } else {
-        const err = new Error('Invalid email or password.');
-        err.status = 400;
-        next(err)
+        next(createError(401, 'Invalid email or password.'))
     }
 });
 
