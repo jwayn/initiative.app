@@ -39,8 +39,9 @@
       
       <!-- rest of actor -->
       <div
+        @click="showActorFullData = !showActorFullData"
         class="flex flex-row p-3"
-        :class="this.checkSavedActor.total_hit_points ? 'rounded-bl' : 'rounded-l'"
+        :class="this.checkSavedActor.total_hit_points ? this.showActorFullData ? '' : 'rounded-bl' : 'rounded-l'"
         :style="{
           borderLeft: this.checkSavedActor.accent_color ? `10px solid ${colors[this.checkSavedActor.accent_color.split('-')[0]][this.checkSavedActor.accent_color.split('-')[1]]}` : ''}">
         <div class="w-full flex">
@@ -109,19 +110,6 @@
                       <span class="mr-1 font-light text-gray-600">AC</span>
                       <span class="mr-2">{{checkSavedActor.armor_class}}</span>
                     </div>
-                    <!-- <div v-if="this.checkSavedActor.total_hit_points" class="relative">
-                      <button @click="showHealthModal = !showHealthModal">
-                        <span class="mr-1 font-light text-gray-600">HP</span>
-                        <span>{{current_hit_points}}</span><span class="font-light text-gray-600">/</span><span>{{checkSavedActor.total_hit_points}}</span>
-                      </button>
-                      <div v-if="showHealthModal" class="health-modal bg-white absolute shadow p-2 rounded">
-                          <input v-model="healthAmountToChange" class="w-full shadow mb-1 px-2" type="number">
-                          <div class="flex justify-between m-2">
-                            <button @click="damage" class="border border-red-600 text-red-600 rounded px-1">Damage</button>
-                            <button @click="heal" class="border border-green-600 text-green-600 rounded px-1">Heal</button>
-                          </div>
-                      </div>
-                    </div> -->
                   </div>
               </div>
             </div>
@@ -150,12 +138,20 @@
         </div>
 
       </div>
+
+      <!-- actor full data -->
+      <transition name="actor-full">
+        <ActorFullData v-if="showActorFullData" :actor="checkSavedActor" :colors="colors" />
+      </transition>
+
     </div>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
+import ActorFullData from './ActorFullData';
+
 export default {
 
   data: function() {
@@ -273,8 +269,12 @@ export default {
           800: '#97266D',
           900: '#902459',
         },
-      }
+      },
+      showActorFullData: false,
     }
+  },
+  components: {
+    ActorFullData,
   },
   props: {
     actor: Object,
@@ -346,4 +346,12 @@ export default {
   .text-shadow {
     text-shadow: 0 1px 3px #A0AEC0;
   }
+
+  .actor-full-enter-active, .actor-full-leave-active {
+        transition: max-height 0.3s;
+    }
+
+    .actor-full-enter, .actor-full-leave-to {
+        max-height: 0;
+    }
 </style>
