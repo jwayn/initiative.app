@@ -39,9 +39,10 @@
       
       <!-- rest of actor -->
       <div
-        class="flex flex-row p-3 rounded-b"
+        class="flex flex-row p-3"
+        :class="this.checkSavedActor.total_hit_points ? 'rounded-bl' : 'rounded-l'"
         :style="{
-          borderLeft: this.checkSavedActor.accent_color ? `4px solid ${colors[this.checkSavedActor.accent_color.split('-')[0]][this.checkSavedActor.accent_color.split('-')[1]]}` : ''}">
+          borderLeft: this.checkSavedActor.accent_color ? `10px solid ${colors[this.checkSavedActor.accent_color.split('-')[0]][this.checkSavedActor.accent_color.split('-')[1]]}` : ''}">
         <div class="w-full flex">
           <div class="flex flex-col flex-grow">
             <div class="flex flex-row">
@@ -79,7 +80,7 @@
                   <div class="flex flex-wrap">
 
 
-                    <span class="text-lg font-bold text-gray-800" :class="checkSavedActor.initiative ? 'pr-2' : ''">{{checkSavedActor.initiative}}</span>
+                    <span v-if="actor.initiative && $store.state.currentInitiativeTracker.started" class="text-lg font-bold text-gray-800" :class="actor.initiative && $store.state.currentInitiativeTracker.started ? 'pr-2' : ''">{{initiative(actor.id)}}</span>
                     
                     <span v-if="this.actor.is_linked && isSignedIn" class="flex items-center mr-1 text-gray-600">
                       <svg class="fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
@@ -296,25 +297,23 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['isSignedIn',]),
+    ...mapGetters(['isSignedIn', 'initiative',]),
     healthWidth: function() {
-      return Math.ceil((this.actor.current_hit_points / this.checkSavedActor.total_hit_points) * 100);
+      return Math.ceil((this.actor.current_hit_points / this.checkSavedActor.total_hit_points) * 100) > 100 ? 100 : Math.ceil((this.actor.current_hit_points / this.checkSavedActor.total_hit_points) * 100);
     },
     checkSavedActor: function() {
-      if(this.actor.is_linked && this.$store.state.isSignedIn) {
-        //74b6a57f-9e98-4f50-ac9e-62a3371108de
-        //eslint-disable-next-line 
-        console.log(this.$store.state.savedActors)
-        //eslint-disable-next-line 
-        console.log('computer property lelx')
-        //eslint-disable-next-line
-        console.log(this.actor.id);
-        //eslint-disable-next-line
-        console.log(this.$store.state.savedActors.find(actor => actor.id === this.actor.id))
+      if(this.actor.is_linked && this.isSignedIn) {
         return this.$store.state.savedActors.find(actor => actor.id === this.actor.id)
       }
       return this.actor;
     },
+  },
+  mount() {
+    if(this.actor.is_linked && this.isSignedIn && !this.$store.state.savedActors.find(actor => actor.id === this.actor.id)) {
+      //eslint-disable-next-line
+      console.log('hello there')
+      this.$store.dispatch('deleteActorFromTracker', this.actor.id)
+    }
   }
 };
 </script>

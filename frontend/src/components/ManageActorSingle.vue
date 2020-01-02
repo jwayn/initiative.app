@@ -3,9 +3,9 @@
   class="m-2 rounded shadow bg-gray-200 my-4"
   >
       <div
-          class="flex flex-row p-3 rounded-b"
+          class="flex flex-row p-3 rounded-l"
           :style="{
-          borderBottom: this.actor.accent_color ? `4px solid ${colors[this.actor.accent_color.split('-')[0]][this.actor.accent_color.split('-')[1]]}` : ''}">
+          borderLeft: this.actor.accent_color ? `10px solid ${colors[this.actor.accent_color.split('-')[0]][this.actor.accent_color.split('-')[1]]}` : ''}">
         <div class="w-full flex">
           <div class="flex flex-col flex-grow">
             <div class="flex flex-row">
@@ -69,7 +69,7 @@
           </div>
 
           <div v-if="!trackerList" class="flex flex-col ml-2 justify-start">
-            <button @click="$emit('deleteActor', actor.id)" class="mb-1" title="Remove actor from combat">
+            <button @click="$emit('deleteActor', actor)" class="mb-1" title="Remove actor from combat">
               <svg class="text-gray-500 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
                 <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/>
               </svg>
@@ -84,9 +84,9 @@
 
 
           <!-- Add actor -->
-          <div v-if="trackerList" class="flex flex-col justify-between items-center">
+          <div v-if="trackerList" class="flex flex-col items-center">
             
-            <div class="flex">
+            <div class="flex pb-2">
               <button @click="linkActorToTracker" class="w-20 flex justify-between text-gray-500 hover:text-gray-700">
                 <p class="text-gray-700">Link</p>
                 <svg class="fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">

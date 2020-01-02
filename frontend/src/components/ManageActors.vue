@@ -6,8 +6,14 @@
       <!-- Actor list controls -->
       <div  v-if="!showActorAdd" class='w-full flex items-center justify-between flex-col sm:flex-row p-2'>
 
-        <div class="flex justify-around flex-col sm:flex-row items-center flex-wrap mb-2">
+        <div class="flex justify-around flex-grow flex-col sm:flex-row items-center flex-wrap mb-2 sm:mb-0 mr-3">
 
+          <!-- Search -->
+          <div class="flex flex-grow mb-4 sm:mr-2 sm:mb-0">
+            <input type="text" class="shadow px-2 py-1 rounded w-full" placeholder="Search" v-model="searchTerm" @keyup="searchList">
+          </div>
+
+          <!-- Filters -->
           <div class="flex mb-4 sm:mb-0">
             <button
             class="py-1 px-3 rounded-l border-t border-l border-b border-green-700 bg-white"
@@ -31,7 +37,8 @@
               NPC
             </button>
           </div>
-
+          
+          <!-- Sort Dropdown -->
           <div class="mx-2 mb-4 sm:mb-0 relative">
             <button @click="showSortDropdown = !showSortDropdown" class="bg-green-700 rounded px-2 py-1 pr-8 text-white">Sort by: {{sortName}}</button>
             <div
@@ -283,12 +290,17 @@
       <div v-if="!savedActorsLoading && !showActorAdd" key="actorList" class="w-full">
         <div v-if="filteredActors.length > 0">
           <transition-group name="fade-right" mode="out-in">
-            <ManageActorSingle v-for="actor in filteredActors" :actor="actor" :key="actor.id" v-on:deleteActor="deleteActor" />
+            <ManageActorSingle v-for="actor in filteredActors" :actor="actor" :key="actor.id" v-on:deleteActor="confirmDeleteActor" />
           </transition-group>
         </div>
 
         <p v-else>No actors here...</p>
       </div>
+    </transition>
+
+    <!-- Confirm clear tracker modal -->
+    <transition name="color-fade">
+      <Modal v-if="showConfirmDeleteActor" :message="`Are you sure you want to delete ${actorToDelete.actor_name}?`" @confirm="deleteActor" @cancel="showConfirmDeleteActor = false" title="Warning" titleColor="red" />
     </transition>
 
     <Loader v-if="savedActorsLoading" />
@@ -299,6 +311,7 @@
 import ColorPicker from './ColorPicker';
 import ManageActorSingle from './ManageActorSingle';
 import Loader from './Loader';
+import Modal from './Modal';
 
 import { mapState, mapGetters } from 'vuex';
 
@@ -307,6 +320,7 @@ export default {
     ColorPicker,
     Loader,
     ManageActorSingle,
+    Modal,
   },
   data() {
     return {
@@ -341,6 +355,9 @@ export default {
       saveActorFailed: false,
       characterNameFailedValidation: false,
       showSortDropdown: false,
+      actorToDelete: {},
+      showConfirmDeleteActor: false,
+      searchTerm: '',
     }
   },
   watch: {
@@ -400,8 +417,20 @@ export default {
         })
       }
     },
-    deleteActor: function(actor_id) {
-      this.$store.dispatch('deleteActor', actor_id);
+    deleteActor: function() {
+      if(this.actorToDelete) {
+        this.$store.dispatch('deleteActor', this.actorToDelete.id).then(() => {
+          this.showConfirmDeleteActor = false;
+        })
+      }
+    },
+    cancelDeleteActor: function() {
+      this.actorToDelete = {};
+      this.showConfirmDeleteActor = false;
+    },
+    confirmDeleteActor(actor) {
+      this.actorToDelete = actor;
+      this.showConfirmDeleteActor = true;
     },
     verifyForm: function() {
       if(this.actor.characterName.trim().length < 1) {
@@ -440,11 +469,12 @@ export default {
       this.actor.imageURL = '';
       this.showActorAdd = false;
     },
+    searchList: function() {
+      this.$store.dispatch('updateSearch', this.searchTerm);
+    },
   },
   mounted() {
     if(this.isSignedIn) {
-      //eslint-disable-next-line
-      console.log(this.isSignedIn);
       this.$store.dispatch('retrieveSavedActors');
     }
   },

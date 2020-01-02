@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import Vue from 'vue';
 import Vuex from 'vuex';
 import axios from 'axios';
@@ -20,8 +21,13 @@ export default new Vuex.Store({
         savedActorsLoading: false,
         filter: 'all',
         sort: 'created',
+        search: '',
     },
     getters: {
+        initiative: state => actorId => {
+            let findActor = state.currentInitiativeTracker.actors.find(actor => actor.id === actorId)
+            return findActor.initiative;
+        },
         isSignedIn: state => {
             return state.token !== null;
         },
@@ -48,16 +54,31 @@ export default new Vuex.Store({
                     const index = state.savedActors.indexOf(actor);
                     state.savedActors.splice(index, 1);
                 }
-            })
+            });
+        },
+        deleteActorFromTracker(state, actor_id) {
+            let actorIndex = state.currentInitiativeTracker.actors.indexOf(state.currentInitiativeTracker.actors.find(actor => actor.id === actor_id));
+            state.currentInitiativeTracker.actors.splice(actorIndex, 1);
+            localStorage.setItem('currentInitiativeTracker', JSON.stringify(state.currentInitiativeTracker));
         },
         updateSavedActor(state, newActor) {
             state.savedActors.forEach(actor => {
                 if(actor.id === newActor.id) {
                     Object.assign(actor, newActor);
                 }
-            })
+            });
+
+            if(state.currentInitiativeTracker.actors.find(actor => actor.id === newActor.id)) {
+                let trackerActor = state.currentInitiativeTracker.actors.find(actor => actor.id === newActor.id);
+                if(trackerActor.current_hit_points > newActor.total_hit_points) {
+                    trackerActor.current_hit_points = newActor.total_hit_points;
+                }
+            }
         },
         updateFilteredActors(state, actors) {
+            state.filteredActors = actors;
+        },
+        updateSearchedActors(state, actors) {
             state.filteredActors = actors;
         },
         addActorToCurrentTracker(state, actor) {
@@ -79,6 +100,7 @@ export default new Vuex.Store({
         updateActorCurrentHealth(state, newActor) {
             const actor = state.currentInitiativeTracker.actors.find(actor => actor.id === newActor.actorId);
             actor.current_hit_points = newActor.newHealth;
+            localStorage.setItem('currentInitiativeTracker', JSON.stringify(state.currentInitiativeTracker));
         },
         updateCurrentTracker(state, newTracker) {
             state.currentInitiativeTracker = newTracker;
@@ -87,6 +109,22 @@ export default new Vuex.Store({
             localStorage.removeItem('currentInitiativeTracker');
             state.currentInitiativeTracker = {actors: []}
         },
+        updateInitiative(state, data) {
+            if(state.currentInitiativeTracker.actors.find(actor => actor.id === data.actorId)) {
+                let actor = state.currentInitiativeTracker.actors.find(actor => actor.id === data.actorId);
+                actor.initiative = data.initiative;
+                localStorage.setItem('currentInitiativeTracker', JSON.stringify(state.currentInitiativeTracker));
+            }
+        },
+        startInitiative(state) {
+            state.currentInitiativeTracker.started = true;
+            state.currentInitiativeTracker.actors.sort((a, b) => a.initiative < b.initiative ? -1 : 1).reverse();
+            localStorage.setItem('currentInitiativeTracker', JSON.stringify(state.currentInitiativeTracker));
+        },
+        stopInitiative(state) {
+            state.currentInitiativeTracker.started = false;
+            localStorage.setItem('currentInitiativeTracker', JSON.stringify(state.currentInitiativeTracker));
+        }
     },
     actions: {
         async retrieveToken(context, credentials) {
@@ -148,7 +186,8 @@ export default new Vuex.Store({
             });
 
             if(response.status === 200) {
-                context.commit('deleteSavedActor', actor_id)
+                context.commit('deleteSavedActor', actor_id);
+                context.commit('deleteActorFromTracker', actor_id);
             }
         },
         async retrieveSavedActors(context) {
@@ -231,15 +270,26 @@ export default new Vuex.Store({
         updateFilter(context, filter) {
             this.state.filter = filter;
 
+            let searchedActors = this.state.savedActors;
+            if(this.state.search.trim()) {
+                searchedActors = this.state.savedActors.filter(actor => actor.actor_name.trim().toLowerCase().startsWith(this.state.search.trim().toLowerCase()) 
+                                                                        || actor.player_name && actor.player_name.trim().toLowerCase().startsWith(this.state.search.trim().toLowerCase()));
+            }
+
             if(filter !== 'all') {
-                const filteredActors = this.state.savedActors.filter(actor => actor.npc === (this.state.filter === 'npc' ? true : false));
+                const filteredActors = searchedActors.filter(actor => actor.npc === (this.state.filter === 'npc' ? true : false));
                 context.commit('updateFilteredActors', filteredActors)
             } else {
-                context.commit('updateFilteredActors', this.state.savedActors)
+                context.commit('updateFilteredActors', searchedActors)
             }
         },
+        updateSearch(context, search) {
+            this.state.search = search;
+            context.dispatch('updateFilter', this.state.filter);
+        },
         updateActorCurrentHealth(context, actor) {
-            context.commit('updateActorCurrentHealth', actor)
+            context.commit('updateActorCurrentHealth', actor);
+
         },
         updateSort(context, sort) {
             this.state.sort = sort;
@@ -265,6 +315,16 @@ export default new Vuex.Store({
         },
         clearCurrentTracker(context) {
             context.commit('clearCurrentTracker');
-        }
+        },
+        updateInitiative(context, data) {
+            context.commit('updateInitiative', data);
+        },
+        changeInitiative(context, status) {
+            if(status === 'start') {
+                context.commit('startInitiative');
+            } else {
+                context.commit('stopInitiative');
+            }
+        },
     }
 });
