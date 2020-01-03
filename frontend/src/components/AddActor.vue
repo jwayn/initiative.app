@@ -1,7 +1,7 @@
 <template>
   <div class="w-full bg-white rounded p-4">
 
-    <div class="flex justify-between mb-8">
+    <div class="flex justify-between mb-8 px-2">
 
       <div class="flex flex-wrap items-center">
         <p class="text-lg mr-4 mb-2">
@@ -43,13 +43,13 @@
           <input
             @click="newActor.player_name = ''; numOfActorsToAdd = 1"
             class="shadow border rounded py-2 px-3 mr-2"
-            id="initiativeAdvantage"
+            id="npc"
             type="checkbox"
             v-model="newActor.npc"
           />
           <label
             class="block text-gray-600 text-sm font-bold leading-none"
-            for="initiativeAdvantage"
+            for="npc"
           >
             NPC?
           </label>
@@ -200,7 +200,7 @@
       <!-- Action buttons -->
       <div class="flex py-4" :class="$store.getters.isSignedIn ? 'justify-around' : 'justify-end'">
         
-        <button @click.prevent="" v-if="$store.getters.isSignedIn" class="border border-green-700 bg-white text-green-700 hover:text-green-500 rounded px-2 py-1">
+        <button @click.prevent="saveAndAddActor" v-if="$store.getters.isSignedIn" class="border border-green-700 bg-white text-green-700 hover:text-green-500 rounded px-2 py-1">
           Save Actor
         </button>
 
@@ -212,34 +212,33 @@
     </form>
     <!-- end new actor form -->
 
-    <TrackerSavedActorsList v-else />
+    <ManagerSavedActorsList v-else />
 
   </div>
 </template>
 
 <script>
 import uuidv4 from 'uuid';
-import TrackerSavedActorsList from './TrackerSavedActorsList';
+import ManagerSavedActorsList from './ManagerSavedActorsList';
 import ColorPicker from './ColorPicker';
 
 export default {
   components: {
-    TrackerSavedActorsList,
+    ManagerSavedActorsList,
     ColorPicker,
   },
   data() {
     return {
       newActor: {
         npc: false,
-        actor_name: '',
-        player_name: '',
-        armor_class: '',
-        total_hit_points: '',
-        iniatitive_modifier: 0,
-        initative_advantage: false,
-        image_url: '',
-        accent_color: '',
-        initiative: null,
+        actor_name: null,
+        player_name: null,
+        armor_class: null,
+        total_hit_points: null,
+        initiative_modifier: 0,
+        initiative_advantage: false,
+        image_url: null,
+        accent_color: null,
       },
       characterNameFailedValidation: false,
       showSavedActors: false,
@@ -250,20 +249,47 @@ export default {
     verifyForm: function() {
       return true;
     },
-    addActor: function() {
+    clearForm: function() {
       //eslint-disable-next-line
-      console.log('Add button clicked');
-      if(this.numOfActorsToAdd > 1) {
+      console.log('Form clear!');
+    },
+    addActor: function() {
+      if(this.verifyForm() && this.numOfActorsToAdd > 1) {
         for(let i = 0; i < this.numOfActorsToAdd; i++) {
           let actor = {...this.newActor};
-          if(actor.total_hit_points) actor.current_hit_points = this.newActor.total_hit_points;
-          actor.actor_name = this.newActor.actor_name + ` ${i + 1}`
           actor.id = uuidv4();
+          if(actor.total_hit_points) actor.current_hit_points = this.newActor.total_hit_points;
+          actor.initiative = null;
+          actor.actor_name = this.newActor.actor_name + ` ${i + 1}`
           this.$store.dispatch('addActor', actor)
         }
       } else {
-        if(this.newActor.total_hit_points) this.newActor.current_hit_points = this.newActor.total_hit_points;
         this.newActor.id = uuidv4();
+        this.newActor.initiative = null;
+        if(this.newActor.total_hit_points) this.newActor.current_hit_points = this.newActor.total_hit_points;
+        this.$store.dispatch('addActor', this.newActor)
+      }
+    },
+    saveAndAddActor: async function() {
+      if(this.numOfActorsToAdd > 1) {
+        for(let i = 0; i < this.numOfActorsToAdd; i++) {
+          let actor = {...this.newActor};
+          actor.id = uuidv4();
+          if(i === 0) {
+            await this.$store.dispatch('saveActor', actor);
+            actor.is_linked = true;
+          }
+          if(actor.total_hit_points) actor.current_hit_points = this.newActor.total_hit_points;
+          actor.initiative = null;
+          actor.actor_name = this.newActor.actor_name + ` ${i}`
+          this.$store.dispatch('addActor', actor)
+        }
+      } else if(this.numOfActorsToAdd === 1) {
+        this.newActor.id = uuidv4();
+        await this.$store.dispatch('saveActor', this.newActor)
+        this.newActor.is_linked = true;
+        this.newActor.initiative = null;
+        if(this.newActor.total_hit_points) this.newActor.current_hit_points = this.newActor.total_hit_points;
         this.$store.dispatch('addActor', this.newActor)
       }
     },

@@ -5,7 +5,7 @@ import axios from 'axios';
 import router from '@/router';
 import uuidv4 from 'uuid';
 
-axios.defaults.baseURL = 'http://localhost:3000/';
+axios.defaults.baseURL = 'http://192.168.0.116:3000/';
 
 Vue.use(Vuex);
 
@@ -33,6 +33,9 @@ export default new Vuex.Store({
         },
         currentTrackerActors: state => {
             return state.currentInitiativeTracker.actors;
+        },
+        initiativeStarted: state => {
+            return state.currentInitiativeTracker.started;
         }
     },
     mutations: {
@@ -213,7 +216,7 @@ export default new Vuex.Store({
             }
         },
         async saveActor(context, actor) {
-            const response = await axios.post('/actor', actor, {
+            const response = await axios.post('/actor', {actor}, {
                 headers: {
                     'Content-Type' : 'application/json',
                     'Authorization' : 'Bearer ' + this.state.token
@@ -326,5 +329,8 @@ export default new Vuex.Store({
                 context.commit('stopInitiative');
             }
         },
+        deleteActorFromTracker(context, actorId) {
+            context.commit('deleteActorFromTracker', actorId);
+        }
     }
 });

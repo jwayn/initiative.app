@@ -37,112 +37,122 @@
         <div class="bg-green-600 h-full animate-width flex justify-center" :class="this.healthWidth < 100 ? 'rounded-tl' : 'rounded-t'" :style="{width: this.healthWidth + '%'}"></div>
       </div>
       
-      <!-- rest of actor -->
+      <!-- Actor card -->
       <div
-        @click="showActorFullData = !showActorFullData"
-        class="flex flex-row p-3"
-        :class="this.checkSavedActor.total_hit_points ? this.showActorFullData ? '' : 'rounded-bl' : 'rounded-l'"
-        :style="{
-          borderLeft: this.checkSavedActor.accent_color ? `10px solid ${colors[this.checkSavedActor.accent_color.split('-')[0]][this.checkSavedActor.accent_color.split('-')[1]]}` : ''}">
-        <div class="w-full flex">
-          <div class="flex flex-col flex-grow">
-            <div class="flex flex-row">
-              <div
-                class="rounded-full w-16 h-16 flex items-center justify-center mr-4 min-w-16 bg-center bg-cover shadow"
-                :class="this.checkSavedActor.accent_color ? `bg-${this.checkSavedActor.accent_color}` : 'bg-gray-700' "
-                :style="{backgroundImage: this.checkSavedActor.image_url ? `url(${this.checkSavedActor.image_url})` : ''}"
-              >
-                <svg v-if="!this.checkSavedActor.npc && !this.checkSavedActor.image_url"
-                  :class="this.checkSavedActor.accent_color && this.checkSavedActor.accent_color.split('-')[1] < 400 ? 'text-gray-700' : `text-white` "
-                  class="text-white fill-current"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  height="24"
+          :class="this.checkSavedActor.total_hit_points ? 'rounded-b' : 'rounded'"
+          :style="{
+            borderLeft: this.checkSavedActor.accent_color ? `10px solid ${colors[this.checkSavedActor.accent_color.split('-')[0]][this.checkSavedActor.accent_color.split('-')[1]]}` : ''}">
+        <!-- rest of actor -->
+        <div
+          @click="showActorFullData = !showActorFullData"
+          class="flex flex-row p-3"
+          :class="showActorFullData ? 'pb-0' : ''">
+          <div class="w-full flex">
+            <div class="flex flex-col flex-grow">
+              <div class="flex flex-row">
+                <div
+                  class="rounded-full w-16 h-16 flex items-center justify-center mr-4 min-w-16 bg-center bg-cover shadow"
+                  :class="this.checkSavedActor.accent_color ? `bg-${this.checkSavedActor.accent_color}` : 'bg-gray-600' "
+                  :style="{backgroundImage: this.checkSavedActor.image_url ? `url(${this.checkSavedActor.image_url})` : ''}"
                 >
-                  <path
-                    d="M4 22a8 8 0 1 1 16 0H4zm8-9c-3.315 0-6-2.685-6-6s2.685-6 6-6 6 2.685 6 6-2.685 6-6 6z"
-                  />
-                </svg>
+                  <svg v-if="!this.checkSavedActor.npc && !this.checkSavedActor.image_url"
+                    :class="this.checkSavedActor.accent_color && this.checkSavedActor.accent_color.split('-')[1] < 400 ? 'text-gray-700' : `text-white` "
+                    class="text-white fill-current"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    height="24"
+                  >
+                    <path
+                      d="M4 22a8 8 0 1 1 16 0H4zm8-9c-3.315 0-6-2.685-6-6s2.685-6 6-6 6 2.685 6 6-2.685 6-6 6z"
+                    />
+                  </svg>
 
-                <svg v-if="this.checkSavedActor.npc && !this.checkSavedActor.image_url"
-                  :class="this.checkSavedActor.accent_color && this.checkSavedActor.accent_color.split('-')[1] < 400 ? 'text-gray-700' : `text-white` "
-                  class="text-white fill-current"
-                  xmlns="http://www.w3.org/2000/svg" 
-                  viewBox="0 0 24 24" 
-                  width="24" 
-                  height="24"
-                >
-                  <path d="M18 18v3a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-3H3a1 1 0 0 1-1-1v-5C2 6.477 6.477 2 12 2s10 4.477 10 10v5a1 1 0 0 1-1 1h-3zM7.5 14a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm9 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
-                </svg>
-              </div>
-              <div class="flex flex-col flex-grow">
-                <div class="flex justify-between pb-1">
-                  <div class="flex flex-wrap">
-
-
-                    <span v-if="actor.initiative && $store.state.currentInitiativeTracker.started" class="text-lg font-bold text-gray-800" :class="actor.initiative && $store.state.currentInitiativeTracker.started ? 'pr-2' : ''">{{initiative(actor.id)}}</span>
-                    
-                    <span v-if="this.actor.is_linked && isSignedIn" class="flex items-center mr-1 text-gray-600">
-                      <svg class="fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
-                        <path d="M18.364 15.536L16.95 14.12l1.414-1.414a5 5 0 1 0-7.071-7.071L9.879 7.05 8.464 5.636 9.88 4.222a7 7 0 0 1 9.9 9.9l-1.415 1.414zm-2.828 2.828l-1.415 1.414a7 7 0 0 1-9.9-9.9l1.415-1.414L7.05 9.88l-1.414 1.414a5 5 0 1 0 7.071 7.071l1.414-1.414 1.415 1.414zm-.708-10.607l1.415 1.415-7.071 7.07-1.415-1.414 7.071-7.07z"/>
-                      </svg>
-                    </span>
-
-                    <span v-if="this.actor.is_linked && !isSignedIn" class="flex items-center mr-1 text-gray-600">
-                      <svg  class="fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-                        <path d="M17.657 14.828l-1.414-1.414L17.657 12A4 4 0 1 0 12 6.343l-1.414 1.414-1.414-1.414 1.414-1.414a6 6 0 0 1 8.485 8.485l-1.414 1.414zm-2.829 2.829l-1.414 1.414a6 6 0 1 1-8.485-8.485l1.414-1.414 1.414 1.414L6.343 12A4 4 0 1 0 12 17.657l1.414-1.414 1.414 1.414zm0-9.9l1.415 1.415-7.071 7.07-1.415-1.414 7.071-7.07zM5.775 2.293l1.932-.518L8.742 5.64l-1.931.518-1.036-3.864zm9.483 16.068l1.931-.518 1.036 3.864-1.932.518-1.035-3.864zM2.293 5.775l3.864 1.036-.518 1.931-3.864-1.035.518-1.932zm16.068 9.483l3.864 1.035-.518 1.932-3.864-1.036.518-1.931z"/>
-                      </svg>
-                    </span>
-
-                    <span 
-                      class="font-medium text-gray-800 text-lg pr-3"
-                      :class="this.checkSavedActor.accent_color && this.checkSavedActor.accent_color.split('-')[1] < 400 ? `text-${this.checkSavedActor.accent_color.split('-')[0]}-400` : `text-${this.checkSavedActor.accent_color}` "
-                      
-                    >
-                      {{checkSavedActor.actor_name}}
-                    </span>
-                    <span class="font-light text-gray-600 text-lg">{{checkSavedActor.player_name}}</span>
-                  </div>
+                  <svg v-if="this.checkSavedActor.npc && !this.checkSavedActor.image_url"
+                    :class="this.checkSavedActor.accent_color && this.checkSavedActor.accent_color.split('-')[1] < 400 ? 'text-gray-700' : `text-white` "
+                    class="text-white fill-current"
+                    xmlns="http://www.w3.org/2000/svg" 
+                    viewBox="0 0 24 24" 
+                    width="24" 
+                    height="24"
+                  >
+                    <path d="M18 18v3a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-3H3a1 1 0 0 1-1-1v-5C2 6.477 6.477 2 12 2s10 4.477 10 10v5a1 1 0 0 1-1 1h-3zM7.5 14a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm9 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+                  </svg>
                 </div>
-                  <div v-if="this.checkSavedActor.total_hit_points || this.checkSavedActor.armor_class" class="mt-2 flex flex-row justify-start">
-                    <div v-if="this.checkSavedActor.armor_class">
-                      <span class="mr-1 font-light text-gray-600">AC</span>
-                      <span class="mr-2">{{checkSavedActor.armor_class}}</span>
+                <div class="flex flex-col flex-grow">
+                  <div class="flex justify-between pb-1">
+                    <div class="flex flex-wrap">
+
+
+                      <span v-if="actor.initiative && $store.state.currentInitiativeTracker.started" class="text-lg font-bold text-gray-800" :class="actor.initiative && $store.state.currentInitiativeTracker.started ? 'pr-2' : ''">{{initiative(actor.id)}}</span>
+                      
+                      <span v-if="this.actor.is_linked && isSignedIn" class="flex items-center mr-1 text-gray-600">
+                        <svg class="fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
+                          <path d="M18.364 15.536L16.95 14.12l1.414-1.414a5 5 0 1 0-7.071-7.071L9.879 7.05 8.464 5.636 9.88 4.222a7 7 0 0 1 9.9 9.9l-1.415 1.414zm-2.828 2.828l-1.415 1.414a7 7 0 0 1-9.9-9.9l1.415-1.414L7.05 9.88l-1.414 1.414a5 5 0 1 0 7.071 7.071l1.414-1.414 1.415 1.414zm-.708-10.607l1.415 1.415-7.071 7.07-1.415-1.414 7.071-7.07z"/>
+                        </svg>
+                      </span>
+
+                      <span v-if="this.actor.is_linked && !isSignedIn" class="flex items-center mr-1 text-gray-600">
+                        <svg  class="fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                          <path d="M17.657 14.828l-1.414-1.414L17.657 12A4 4 0 1 0 12 6.343l-1.414 1.414-1.414-1.414 1.414-1.414a6 6 0 0 1 8.485 8.485l-1.414 1.414zm-2.829 2.829l-1.414 1.414a6 6 0 1 1-8.485-8.485l1.414-1.414 1.414 1.414L6.343 12A4 4 0 1 0 12 17.657l1.414-1.414 1.414 1.414zm0-9.9l1.415 1.415-7.071 7.07-1.415-1.414 7.071-7.07zM5.775 2.293l1.932-.518L8.742 5.64l-1.931.518-1.036-3.864zm9.483 16.068l1.931-.518 1.036 3.864-1.932.518-1.035-3.864zM2.293 5.775l3.864 1.036-.518 1.931-3.864-1.035.518-1.932zm16.068 9.483l3.864 1.035-.518 1.932-3.864-1.036.518-1.931z"/>
+                        </svg>
+                      </span>
+
+                      <span 
+                        class="font-medium text-gray-800 text-lg pr-3"
+                        :class="this.checkSavedActor.accent_color && this.checkSavedActor.accent_color.split('-')[1] < 400 ? `text-${this.checkSavedActor.accent_color.split('-')[0]}-400` : `text-${this.checkSavedActor.accent_color}` "
+                        
+                      >
+                        {{checkSavedActor.actor_name}}
+                      </span>
+                      <span v-if="checkSavedActor.npc && checkSavedActor.image_url">
+                        <svg class="text-gray-500 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                          <path d="M18 18v3a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-3H3a1 1 0 0 1-1-1v-5C2 6.477 6.477 2 12 2s10 4.477 10 10v5a1 1 0 0 1-1 1h-3zM7.5 14a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm9 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+                        </svg>
+                      </span>
+                      <span class="font-light text-gray-600 text-lg">{{checkSavedActor.player_name}}</span>
                     </div>
                   </div>
+                    <div v-if="this.checkSavedActor.total_hit_points || this.checkSavedActor.armor_class" class="mt-2 flex flex-row justify-start">
+                      <div v-if="this.checkSavedActor.armor_class">
+                        <span class="mr-1 font-light text-gray-600">AC</span>
+                        <span class="mr-2">{{checkSavedActor.armor_class}}</span>
+                      </div>
+                    </div>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="flex flex-col ml-2 justify-start items-center">
-            <div class="flex flex-col ml-2 justify-start">
+            <div class="flex flex-col ml-2 justify-start items-center">
+              <div class="flex flex-col ml-2 justify-start">
 
-            <button @click="$emit('deleteActor', index)" class="mb-1" title="Remove actor from combat">
-              <svg class="text-gray-500 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-                <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/>
-              </svg>
-            </button>
+              <button @click="$emit('deleteActor', index)" class="mb-1" title="Remove actor from combat">
+                <svg class="text-gray-500 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                  <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/>
+                </svg>
+              </button>
 
-            <button v-if="actor.visibleToGuests" class="" title="Show actor to guests">
-              <svg class="text-gray-500 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-                <path d="M17.882 19.297A10.949 10.949 0 0 1 12 21c-5.392 0-9.878-3.88-10.819-9a10.982 10.982 0 0 1 3.34-6.066L1.392 2.808l1.415-1.415 19.799 19.8-1.415 1.414-3.31-3.31zM5.935 7.35A8.965 8.965 0 0 0 3.223 12a9.005 9.005 0 0 0 13.201 5.838l-2.028-2.028A4.5 4.5 0 0 1 8.19 9.604L5.935 7.35zm6.979 6.978l-3.242-3.242a2.5 2.5 0 0 0 3.241 3.241zm7.893 2.264l-1.431-1.43A8.935 8.935 0 0 0 20.777 12 9.005 9.005 0 0 0 9.552 5.338L7.974 3.76C9.221 3.27 10.58 3 12 3c5.392 0 9.878 3.88 10.819 9a10.947 10.947 0 0 1-2.012 4.592zm-9.084-9.084a4.5 4.5 0 0 1 4.769 4.769l-4.77-4.769z"/>
-              </svg>
-            </button>
-            <button v-if="!actor.visibleToGuests" class="" title="Hide actor from guests">
-              <svg class="text-gray-500 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-                <path d="M12 3c5.392 0 9.878 3.88 10.819 9-.94 5.12-5.427 9-10.819 9-5.392 0-9.878-3.88-10.819-9C2.121 6.88 6.608 3 12 3zm0 16a9.005 9.005 0 0 0 8.777-7 9.005 9.005 0 0 0-17.554 0A9.005 9.005 0 0 0 12 19zm0-2.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9zm0-2a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
-              </svg>
-            </button>
+              <button v-if="actor.visibleToGuests" class="" title="Show actor to guests">
+                <svg class="text-gray-500 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                  <path d="M17.882 19.297A10.949 10.949 0 0 1 12 21c-5.392 0-9.878-3.88-10.819-9a10.982 10.982 0 0 1 3.34-6.066L1.392 2.808l1.415-1.415 19.799 19.8-1.415 1.414-3.31-3.31zM5.935 7.35A8.965 8.965 0 0 0 3.223 12a9.005 9.005 0 0 0 13.201 5.838l-2.028-2.028A4.5 4.5 0 0 1 8.19 9.604L5.935 7.35zm6.979 6.978l-3.242-3.242a2.5 2.5 0 0 0 3.241 3.241zm7.893 2.264l-1.431-1.43A8.935 8.935 0 0 0 20.777 12 9.005 9.005 0 0 0 9.552 5.338L7.974 3.76C9.221 3.27 10.58 3 12 3c5.392 0 9.878 3.88 10.819 9a10.947 10.947 0 0 1-2.012 4.592zm-9.084-9.084a4.5 4.5 0 0 1 4.769 4.769l-4.77-4.769z"/>
+                </svg>
+              </button>
+              <button v-if="!actor.visibleToGuests" class="" title="Hide actor from guests">
+                <svg class="text-gray-500 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                  <path d="M12 3c5.392 0 9.878 3.88 10.819 9-.94 5.12-5.427 9-10.819 9-5.392 0-9.878-3.88-10.819-9C2.121 6.88 6.608 3 12 3zm0 16a9.005 9.005 0 0 0 8.777-7 9.005 9.005 0 0 0-17.554 0A9.005 9.005 0 0 0 12 19zm0-2.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9zm0-2a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+                </svg>
+              </button>
+            </div>
+            </div>
           </div>
-          </div>
+
         </div>
 
-      </div>
+        <!-- actor full data -->
+        <transition name="actor-full">
+          <ActorFullData v-if="showActorFullData" :actor="checkSavedActor" />
+        </transition>
 
-      <!-- actor full data -->
-      <transition name="actor-full">
-        <ActorFullData v-if="showActorFullData" :actor="checkSavedActor" :colors="colors" />
-      </transition>
+      </div>
 
     </div>
   </div>
@@ -307,8 +317,18 @@ export default {
       }
       return this.actor;
     },
+    checkForBorder: function() {
+      if (this.showActorFullData && !this.checkSavedActor.total_hit_points) {
+        return 'rounded-tl';
+      } else if (!this.showActorFullData && this.checkSavedActor.total_hit_points) {
+        return 'rounded-bl';
+      } else if (this.showActorFullData && this.checkSavedActor.total_hit_points) {
+        return ''
+      }
+      return 'rounded-l';
+    }
   },
-  mount() {
+  created() {
     if(this.actor.is_linked && this.isSignedIn && !this.$store.state.savedActors.find(actor => actor.id === this.actor.id)) {
       //eslint-disable-next-line
       console.log('hello there')

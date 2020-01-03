@@ -10,7 +10,7 @@ module.exports = {
     },
     create: function(user_id, actor) {
         actor.owner = user_id;
-        actor.id = uuidv4();
+        actor.id = actor.id || uuidv4();
         const now = new Date();
         actor.created = now;
         actor.updated = now;

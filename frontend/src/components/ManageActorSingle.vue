@@ -41,12 +41,17 @@
               <div class="flex flex-col justify-between flex-grow">
 
                 <div class="flex justify-between pb-1">
-                  <div class="flex flex-wrap">
+                  <div class="flex flex-wrap items-center">
                     <span 
                     class="font-medium text-gray-800 text-lg pr-3"
                     :class="this.actor.accent_color && this.actor.accent_color.split('-')[1] < 400 ? `text-${this.actor.accent_color.split('-')[0]}-400` : `text-${this.actor.accent_color}` "
                     > 
                       {{actor.actor_name}}
+                    </span>
+                    <span v-if="actor.npc && actor.image_url">
+                      <svg class="text-gray-500 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                        <path d="M18 18v3a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-3H3a1 1 0 0 1-1-1v-5C2 6.477 6.477 2 12 2s10 4.477 10 10v5a1 1 0 0 1-1 1h-3zM7.5 14a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm9 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+                      </svg>
                     </span>
                     <span v-if="actor.player_name" class="font-light text-gray-600 text-lg">{{actor.player_name}}</span>
                   </div>

@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-100 w-full max-w-3xl mt-4 flex justify-center items-center flex-col">
+  <div class="bg-white w-full max-w-3xl pt-4 flex justify-center items-center flex-col">
 
 
     <transition name="fade">
@@ -9,8 +9,8 @@
         <div class="flex justify-around flex-grow flex-col sm:flex-row items-center flex-wrap mb-2 sm:mb-0 mr-3">
 
           <!-- Search -->
-          <div class="flex flex-grow mb-4 sm:mr-2 sm:mb-0">
-            <input type="text" class="shadow px-2 py-1 rounded w-full" placeholder="Search" v-model="searchTerm" @keyup="searchList">
+          <div class="flex flex-grow mb-4 sm:mr-2 sm:mb-0 border border-green-700 rounded shadow">
+            <input type="text" class="px-2 py-1 rounded w-full" placeholder="Search" v-model="searchTerm" @keyup="searchList">
           </div>
 
           <!-- Filters -->
@@ -94,21 +94,21 @@
             <label class="block text-gray-600 text-sm font-bold mb-2" :class="characterNameFailedValidation ? 'text-red-600' : ''" for="characterName">
               Character Name (required)
             </label>
-            <input @change="verifyForm" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :class="characterNameFailedValidation ? 'border-red-600' : ''" id="characterName" type="text" placeholder="Character Name" v-model="actor.characterName">
+            <input @change="verifyForm" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :class="characterNameFailedValidation ? 'border-red-600' : ''" id="characterName" type="text" placeholder="Character Name" v-model="actor.actor_name">
           </div>
 
           <div v-if="!actor.npc" class="mb-4">
             <label class="block text-gray-600 text-sm font-bold mb-2" for="playerName">
               Player Name
             </label>
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="playerName" type="text" placeholder="Player Name" v-model="actor.playerName">
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="playerName" type="text" placeholder="Player Name" v-model="actor.player_name">
           </div>
 
           <div class="mb-4">
             <label class="block text-gray-600 text-sm font-bold mb-2" for="imageURL">
               Image URL
             </label>
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="imageURL" type="text" placeholder="http://image.url/image.png" v-model="actor.imageURL">
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="imageURL" type="text" placeholder="http://image.url/image.png" v-model="actor.image_url">
           </div>
 
           <div class="mb-4 flex justify-between">
@@ -116,14 +116,14 @@
               <label class="block text-gray-600 text-sm font-bold mb-2 leading-none" for="armorClass">
                 AC
               </label>
-              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="armorClass" type="number" v-model="actor.armorClass">
+              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="armorClass" type="number" v-model="actor.armor_class">
             </div>
 
             <div class="sm:w-1/2">
               <label class="block text-gray-600 text-sm font-bold mb-2 leading-none" for="hitPoints">
                 HP
               </label>
-              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="hitPoints" type="number" v-model="actor.hitPoints">
+              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="hitPoints" type="number" v-model="actor.total_hit_points">
             </div>
           </div>
 
@@ -132,11 +132,11 @@
               <label class="block text-gray-600 text-sm font-bold mb-2 leading-none" for="initiativeModifier">
                 Initiative Modifier
               </label>
-              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="initiativeModifier" type="number" v-model="actor.initiativeModifier">
+              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="initiativeModifier" type="number" v-model="actor.initiative_modifier">
             </div>
 
             <div class="sm:w-1/2 sm:ml-4 flex items-center">
-              <input class="shadow border rounded py-2 px-3 mr-2" id="initiativeAdvantage" type="checkbox" v-model="actor.initiativeAdvantage">
+              <input class="shadow border rounded py-2 px-3 mr-2" id="initiativeAdvantage" type="checkbox" v-model="actor.initiative_advantage">
               <label class="block text-gray-600 text-sm font-bold leading-none" for="initiativeAdvantage">
                 Initiative Advantage
               </label>
@@ -148,7 +148,7 @@
               <label class="block text-gray-600 text-sm font-bold mb-2 leading-none" title="Comma separated if multiple classes" for="charClass">
                 Class(es)
               </label>
-              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="class" type="text" v-model="actor.charClass">
+              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="class" type="text" v-model="actor.actor_class">
             </div>
 
             <div class="sm:w-1/2">
@@ -253,28 +253,28 @@
                 <label class="block text-gray-600 text-sm font-bold mb-2 leading-none" for="passivePerception">
                   Perception
                 </label>
-                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="passivePerception" type="number" v-model="actor.passivePerception">
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="passivePerception" type="number" v-model="actor.passive_perception">
               </div>
 
               <div class="w-1/2 mr-2">
                 <label class="block text-gray-600 text-sm font-bold mb-2 leading-none" for="passiveInvestigation">
                   Investigation
                 </label>
-                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="passiveInvestigation" type="number" v-model="actor.passiveInvestigation">
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="passiveInvestigation" type="number" v-model="actor.passive_investigation">
               </div>
 
               <div class="w-1/2">
                 <label class="block text-gray-600 text-sm font-bold mb-2 leading-none" for="passiveInsight">
                   Insight
                 </label>
-                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="passiveInsight" type="number" v-model="actor.passiveInsight">
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="passiveInsight" type="number" v-model="actor.passive_insight">
               </div>
             </div>
 
           </div>
           <!-- End Passives -->
 
-          <ColorPicker :selectedColor="actor.accentColor" v-on:pickColor="pickColor" />
+          <ColorPicker :selectedColor="actor.accent_color" v-on:pickColor="pickColor" />
 
 
           <div class="w-full flex justify-center mt-8">
@@ -326,14 +326,13 @@ export default {
     return {
       actor: {
         npc: false,
-        characterName: '',
-        playerName: '',
-        initiative: '',
-        initiativeModifier: '',
-        initiativeAdvantage: false,
-        armorClass: '',
-        hitPoints: '',
-        charClass: '',
+        actor_name: '',
+        player_name: '',
+        initiative_modifier: '',
+        initiative_advantage: false,
+        armor_class: '',
+        total_hit_points: '',
+        actor_class: '',
         race: '',
         level: '',
         alignment: '',
@@ -343,11 +342,11 @@ export default {
         intelligence: '',
         wisdom: '',
         charisma: '',
-        passivePerception: '',
-        passiveInvestigation: '',
-        passiveInsight: '',
-        accentColor: '',
-        imageURL: '',
+        passive_perception: '',
+        passive_investigation: '',
+        passive_insight: '',
+        accent_color: '',
+        image_url: '',
       },
       filterActors: 'all',
       sortActors: 'created',
@@ -433,7 +432,7 @@ export default {
       this.showConfirmDeleteActor = true;
     },
     verifyForm: function() {
-      if(this.actor.characterName.trim().length < 1) {
+      if(this.actor.actor_name.trim().length < 1) {
         this.characterNameFailedValidation = true;
         window.scrollTo({ top: 0, behavior: 'smooth' })
       } else {
@@ -441,18 +440,17 @@ export default {
       }
     },
     pickColor: function(color) {
-      this.actor.accentColor = color;
+      this.actor.accent_color = color;
     },
     clearForm: function() {
       this.actor.npc = false;
-      this.actor.characterName = '';
-      this.actor.playerName = '';
-      this.actor.initiative = '';
-      this.actor.initiativeModifier = '';
-      this.actor.initiativeAdvantage = false;
-      this.actor.armorClass = '';
-      this.actor.hitPoints = '';
-      this.actor.charClass = '';
+      this.actor.actor_name = '';
+      this.actor.player_name = '';
+      this.actor.initiative_modifier = '';
+      this.actor.initiative_advantage = false;
+      this.actor.armor_class = '';
+      this.actor.hit_points = '';
+      this.actor.actor_class = '';
       this.actor.race = '';
       this.actor.level = '';
       this.actor.alignment = '';
@@ -462,11 +460,11 @@ export default {
       this.actor.intelligence = '';
       this.actor.wisdom = '';
       this.actor.charisma = '';
-      this.actor.passivePerception = '';
-      this.actor.passiveInvestigation = '';
-      this.actor.passiveInsight = '';
-      this.actor.accentColor = '';
-      this.actor.imageURL = '';
+      this.actor.passive_perception = '';
+      this.actor.passive_investigation = '';
+      this.actor.passive_insight = '';
+      this.actor.accent_color = '';
+      this.actor.image_url = '';
       this.showActorAdd = false;
     },
     searchList: function() {

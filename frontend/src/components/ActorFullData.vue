@@ -1,9 +1,12 @@
 <template>
-  <div 
-    class="flex flex-col p-3 overflow-y-hidden actor-full-data" 
-    :class="'border-left rounded-bl'"
-    :style="{borderLeft: actor.accent_color ? `10px solid ${colors[actor.accent_color.split('-')[0]][actor.accent_color.split('-')[1]]}` : ''}">
-        
+  <div class="flex flex-col pb-3 pl-3 pr-3 overflow-y-hidden actor-full-data">
+
+    <button @click="showEditActor = !showEditActor" class="mb-1 self-end" title="Edit Actor">
+      <svg class="text-gray-500 fill-current mb-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+        <path d="M21 6.757l-2 2V4h-9v5H5v11h14v-2.757l2-2v5.765a.993.993 0 0 1-.993.992H3.993A1 1 0 0 1 3 20.993V8l6.003-6h10.995C20.55 2 21 2.455 21 2.992v3.765zm.778 2.05l1.414 1.415L15.414 18l-1.416-.002.002-1.412 7.778-7.778z"/>
+      </svg>
+    </button>
+
     <div class="my-2">
       <span class="text-gray-700 text-sm font-bold">
         {{actor.alignment}} {{actor.level ? `Level ${actor.level}` : ''}} {{actor.race}} {{actor.actor_class}}
@@ -85,7 +88,6 @@
 export default {
   props: {
     actor: Object,
-    colors: Object,
   }
 }
 </script>

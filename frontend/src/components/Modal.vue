@@ -1,5 +1,5 @@
 <template>
-    <div class="h-screen w-screen bg-trans absolute left-0 flex items-end sm:items-start justify-center" :style="{top: `${scrollTop}px`}">
+    <div v-on:keyup.esc="$emit('cancel')" class="h-screen w-screen bg-trans absolute left-0 flex items-end sm:items-start justify-center" :style="{top: `${scrollTop}px`}">
         <div class="rounded bg-white max-w-sm sm:max-w-2xl w-full mb-10 sm:mb-0 sm:mt-20 mx-2 relative p-5 flex flex-col modal">
             <button class="absolute right-0 pr-2 top-0 pt-2" @click="$emit('cancel')">
                 <svg class="text-gray-500 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">

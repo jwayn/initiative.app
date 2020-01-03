@@ -30,14 +30,14 @@
                 </button> -->
                 
                 <!-- Start encounter -->
-                <button title="Start this encounter" v-if="!$store.state.currentInitiativeTracker.started && currentTrackerActors.length" v-on:hideStartInit="this.showStartInitiative = false" class="border border-green-700 rounded bg-white text-green-700 hover:text-green-500 p-2 mx-1 flex" @click="showStartInitiative = !showStartInitiative">
+                <button title="Start this encounter" v-if="!initiativeStarted && currentTrackerActors.length" v-on:hideStartInit="this.showStartInitiative = false" class="border border-green-700 rounded bg-white text-green-700 hover:text-green-500 p-2 mx-1 flex" @click="showStartInitiative = !showStartInitiative">
                     <svg class="fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
                         <path d="M19.376 12.416L8.777 19.482A.5.5 0 0 1 8 19.066V4.934a.5.5 0 0 1 .777-.416l10.599 7.066a.5.5 0 0 1 0 .832z"/>
                     </svg>
                 </button>
 
                 <!-- Stop encounter -->
-                <button title="Stop this encounter" v-if="$store.state.currentInitiativeTracker.started" @click="stopInit" class="border border-green-700 rounded bg-white text-green-700 hover:text-green-500 p-2 mx-1 flex">
+                <button title="Stop this encounter" v-if="initiativeStarted" @click="stopInit" class="border border-green-700 rounded bg-white text-green-700 hover:text-green-500 p-2 mx-1 flex">
                     <svg class="fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
                         <path d="M6 7v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/>
                     </svg>
@@ -51,7 +51,7 @@
                 </button>
 
                 <!-- Next turn -->
-                <button @click.prevent="nextTurn" v-if="currentTrackerActors.length && $store.state.currentInitiativeTracker.started" title="Next turn" class="border border-green-700 rounded bg-white text-green-700 hover:text-green-500 p-2 mx-1 flex">
+                <button @click.prevent="nextTurn" v-if="currentTrackerActors.length && initiativeStarted" title="Next turn" class="border border-green-700 rounded bg-white text-green-700 hover:text-green-500 p-2 mx-1 flex">
                     <svg class="fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
                         <path d="M7.788 17.444A.5.5 0 0 1 7 17.035V6.965a.5.5 0 0 1 .788-.409l7.133 5.036a.5.5 0 0 1 0 .816l-7.133 5.036zM16 7a1 1 0 0 1 2 0v10a1 1 0 1 1-2 0V7z"/>
                     </svg>
@@ -68,34 +68,15 @@
         </transition>
         
         <!-- Actors list -->
-        <draggable v-model="$store.state.currentInitiativeTracker.actors" @start="drag=true" @end="drag=false" ghost-class="actor-ghost" chosen-class="actor-chosen" drag-class="actor-drag" :options="{delay:400, delayOnTouchOnly: true}" class="pb-10" v-if="currentTrackerActors">
+        <draggable v-model="$store.state.currentInitiativeTracker.actors" @start="drag=true" @end="drag=false" ghost-class="actor-ghost" chosen-class="actor-chosen" drag-class="actor-drag" :options="{delay:300, delayOnTouchOnly: true}" class="pb-10" v-if="currentTrackerActors.length">
             <transition-group name="actor-list" tag="div">
                 <Actor v-on:deleteActor="deleteActor" v-for="n in currentTrackerActors.length" :actor="currentTrackerActors[n-1]" :index="n - 1" :key="currentTrackerActors[n-1].id" />
             </transition-group>
         </draggable>
         <div v-else>
-            Add actors to track
+            No actors in tracker...
         </div>
 
-
-        <!-- Confirm clear tracker modal -->
-        <!-- <transition name="color-fade">
-            <div v-if="showConfirmClearTracker" class="h-screen w-screen bg-trans absolute left-0 top-0 flex items-end sm:items-center justify-center">
-                <div class="rounded bg-white max-w-sm sm:max-w-2xl w-full mb-10 sm:mb-0 sm:mt-0 mx-2 relative p-5 flex flex-col h-40">
-                    <button class="absolute right-0 pr-2 top-0 pt-2" @click="showConfirmClearTracker = false">
-                        <svg class="text-gray-500 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-                            <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/>
-                        </svg>
-                    </button>
-                    <h2 class="text-red-600 font-bold text-lg pb-2">Warning</h2>
-                    <p class="pb-6">Are you sure you want to clear the tracker?</p>
-                    <div class="w-full flex justify-around pb-4">
-                        <button class="rounded bg-gray-400 text-gray-700 px-2 py-1" @click="showConfirmClearTracker = false">Cancel</button>
-                        <button class="rounded bg-red-600 px-2 py-1 text-white" @click="clearTracker">Yes</button>
-                    </div>
-                </div>
-            </div>
-        </transition> -->
         <transition name="color-fade">
             <Modal v-if="showConfirmClearTracker" :message="`Are you sure you want to clear the tracker?`" @confirm="clearTracker" @cancel="showConfirmClearTracker = false" title="Warning" titleColor="red" />
         </transition>
@@ -153,7 +134,7 @@ export default {
         },
     },
     computed: {
-        ...mapGetters(['currentTrackerActors', 'isSignedIn'])
+        ...mapGetters(['currentTrackerActors', 'isSignedIn', 'initiativeStarted',])
     },
     mounted() {
         if(this.isSignedIn) {
